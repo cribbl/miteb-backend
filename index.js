@@ -5,7 +5,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 // fetchRooms = require('./models/fetchRooms');
-admin.initializeApp(functions.config().firebase);
+
+var serviceAccount = require("./config.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://mit-clubs-management.firebaseio.com"
+});
+
 const ref = admin.database().ref('rooms');
 
 app = express();
