@@ -72,8 +72,8 @@ module.exports = {
       api
 }
 
-app.listen(7001);
-console.log('running');
+// app.listen(7001);
+// console.log('running');
 
 // var room_arr = {
 //       "3101" : false,
