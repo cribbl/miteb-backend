@@ -1,22 +1,12 @@
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
 const moment = require('moment');
 const express = require('express');
-const firebase = require('firebase');
+const bodyParser = require('body-parser');
+
 // fetchRooms = require('./models/fetchRooms');
-
-// http://localhost:3001/fetch_rooms?start_date=2018-03-10T16:33:36-05:30&end_date=2018-03-12T16:33:36-05:30
-
-var config = {
-    apiKey: "AIzaSyAhKIXmaPGeHw_7hX9qfjGecaLCGsLDn4g",
-    authDomain: "mit-clubs-management.firebaseapp.com",
-    databaseURL: "https://mit-clubs-management.firebaseio.com",
-    projectId: "mit-clubs-management",
-    storageBucket: "mit-clubs-management.appspot.com",
-    messagingSenderId: "330445707440"
-  };
-
-firebase.initializeApp(config);
-
-const firebaseDB = firebase.database();
+admin.initializeApp(functions.config().firebase);
+const ref = admin.database().ref('rooms');
 
 app = express()
 
@@ -24,32 +14,66 @@ app.get('/', function(req, res) {
       res.send('Hello world!');
 });
 
+
 function datesBetween(start_date, end_date) {
       var start_date = moment(start_date);
       var end_date = moment(end_date);
 }
 
+app.get('/send-notif', function(req, res) {
+      var token = String(req.query.token);
+      const payload = {
+            notification: {
+                  title: 'My Title',
+                  body: 'Message body',
+                  icon: 'https://laracasts.com/images/series/circles/do-you-react.png'
+            }
+      };
+
+      admin.messaging().sendToDevice(token, payload)
+      .then(function(res) {
+            console.log("sent" + res);
+      })
+      .catch(function(err) {
+            console.log("error" + err);    
+      })
+})
+
 app.get('/fetch_rooms/', function(req, res) {
-      // var start_date = String(req.query.start_date);
-      // var end_date = String(req.query.end_date);
+      var start_date = String(req.query.start_date);
+      var end_date = String(req.query.end_date);
 
+      var date = start_date;
 
-      var date = moment().format('DD-MM-YYYY');
-      var end_date = moment().add(2, 'days').format('DD-MM-YYYY');
+      res.setHeader('Content-Type', 'text/plain');
 
-      // res.setHeader('Content-Type', 'text/plain');
-      console.log(date);
-      firebaseDB.ref('/rooms/').on('value',
-      	function(snapshot) {
-        	console.log('snapshot')	
-        	console.log(snapshot)
-        })
-      console.log('done');
+      res.write(start_date);
+      res.write(end_date);
+      res.write(date);
+
+      while(date != end_date) {
+            date = moment(date).add(1, 'days').format('DD-MM-YYYY');
+            res.write(date);
+            ref.child(date).once('value')
+                  .then(function(snapshot) {
+                        res.write(snapshot);
+                  })
+                  .catch(err => {
+                        res.write(err);
+                  });
+      }
+      res.send('done');
 });
 
+const api = functions.https.onRequest(app);
 
-app.listen(3001);
-console.log('running');
+
+module.exports = {
+      api
+}
+
+// app.listen(7001);
+// console.log('running');
 
 // var room_arr = {
 //       "3101" : false,
