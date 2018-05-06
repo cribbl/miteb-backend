@@ -8,8 +8,7 @@ const bodyParser = require('body-parser');
 admin.initializeApp(functions.config().firebase);
 const ref = admin.database().ref('rooms');
 
-app = express()
-app.set('port', (process.env.PORT || 5000));
+app = express();
 
 app.get('/', function(req, res) {
       res.send('Hello world!');
@@ -73,8 +72,8 @@ module.exports = {
       api
 }
 
-app.listen(app.get('port'), function() {
-  console.log('running');
+app.listen(process.env.PORT || 3000, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
 
 // var room_arr = {
