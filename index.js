@@ -22,6 +22,13 @@ app.get('/', function(req, res) {
       res.status(200).send("Hello World!");
 });
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 function datesBetween(start_date, end_date) {
       var start_date = moment(start_date);
@@ -44,7 +51,9 @@ app.get('/send-notif', function(req, res) {
       })
 })
 
-app.get('/send-email', function(req, res) {
+app.post('/send-email', function(req, res) {
+  var params = req.body;
+  console.log(params);
   var transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 465,
@@ -55,11 +64,11 @@ app.get('/send-email', function(req, res) {
       }
   });
   var mailOptions = {
-      from: 'miteventbooking@gmail.com', // sender address (who sends)
-      to: 'dummymitfa@gmail.com', // list of receivers (who receives)
-      subject: 'Hello', // Subject line
-      text: 'Hello world ', // plaintext body
-      html: '<b>Hello world </b><br> This is the first email sent with Nodemailer in Node.js' // html body
+      from: params.senderEmail, // sender address (who sends)
+      to: params.to, // list of receivers (who receives)
+      subject: params.subject, // Subject line
+      text: params.text, // plaintext body
+      html: params.html // html body
   };
 
   // send mail with defined transport object
