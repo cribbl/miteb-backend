@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 const moment = require('moment');
 const express = require('express');
 const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer')
 
 // fetchRooms = require('./models/fetchRooms');
 
@@ -39,8 +40,37 @@ app.get('/send-notif', function(req, res) {
       })
       .catch(function(err) {
             console.log("error" + err);
-            res.status(302).send("error") 
+            res.status(302).send("error");
       })
+})
+
+app.get('/send-email', function(req, res) {
+  var transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true, // use SSL
+      auth: {
+          user: 'miteventbooking@gmail.com',
+          pass: 'Password@1234'
+      }
+  });
+  var mailOptions = {
+      from: 'miteventbooking@gmail.com', // sender address (who sends)
+      to: 'dummymitfa@gmail.com', // list of receivers (who receives)
+      subject: 'Hello', // Subject line
+      text: 'Hello world ', // plaintext body
+      html: '<b>Hello world </b><br> This is the first email sent with Nodemailer in Node.js' // html body
+  };
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, function(error, info){
+      if(error){
+          return console.log(error);
+          res.status(302).send(error);
+      }
+      console.log('Message sent: ' + info.response);
+      res.status(200).send(info.response);
+  });
 })
 
 app.get('/update-user', function(req, res) {
