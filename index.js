@@ -18,7 +18,7 @@ const ref = admin.database().ref('rooms');
 app = express();
 
 app.get('/', function(req, res) {
-      res.send('Hello world!');
+      res.status(200).send("Hello World!");
 });
 
 
@@ -29,21 +29,41 @@ function datesBetween(start_date, end_date) {
 
 app.get('/send-notif', function(req, res) {
       var token = String(req.query.token);
-      const payload = {
-            notification: {
-                  title: 'My Title',
-                  body: 'Message body',
-                  icon: 'https://laracasts.com/images/series/circles/do-you-react.png'
-            }
-      };
+      var payload = req.query.payload;
+      console.log(payload);
 
       admin.messaging().sendToDevice(token, payload)
-      .then(function(res) {
-            console.log("sent" + res);
+      .then(function(resp) {
+            console.log("sent" + resp);
+            res.status(200).send("sent")
       })
       .catch(function(err) {
-            console.log("error" + err);    
+            console.log("error" + err);
+            res.status(302).send("error") 
       })
+})
+
+app.get('/update-user', function(req, res) {
+  // var uid = String(req.query.uid);
+  uid = "z8sTDxIHeVZhorxqcFxe4j6fvRp2";
+  // var newinfo = req.query.newinfo;
+  // console.log(newinfo);
+  
+  var newinfox = {
+    email: "dummymitfa@gmail.com",
+    emailVerified: true,
+    password: "Password@1234"
+  }
+
+  admin.auth().updateUser(uid, newinfox)
+    .then(function(userRecord) {
+      console.log("Successfully updated user", userRecord.toJSON());
+      res.status(200).send("Successfully updated user", userRecord.toJSON())
+    })
+    .catch(function(error) {
+      console.log("Error updating user:", error);
+      res.status(302).send("Error updating user:", error);
+    });
 })
 
 app.get('/fetch_rooms/', function(req, res) {
@@ -69,7 +89,7 @@ app.get('/fetch_rooms/', function(req, res) {
                         res.write(err);
                   });
       }
-      res.send('done');
+      res.status(200).send("done");
 });
 
 const api = functions.https.onRequest(app);
@@ -79,7 +99,7 @@ module.exports = {
       api
 }
 
-app.listen(process.env.PORT || 3000, function(){
+app.listen(process.env.PORT || 9000, function(){
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
 
