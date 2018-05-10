@@ -41,16 +41,25 @@ app.get('/login', function(req, res) {
   var password = req.query.password
 
   if(username == "admin" && password == "pass") {
-    var user = {
-      username: 'admin',
-      email: 'admin@gmail.com',
-      displayName: 'Mr. Admin',
-      phone: '9988776644'
-    };
-    res.status(200).send(user);
+  	var user = {
+  	  username: 'admin',
+  	  email: 'admin@gmail.com',
+  	  displayName: 'Mr. Admin',
+  	  phone: '9988776644'
+  	};
+  	response = {
+  		code: 'success',
+  		user: user
+  	}
+    res.status(200).send(response);
   }
-  else
-    res.status(200).send("failed");
+  else = {
+  	response = {
+  		code: 'failed',
+  		user: null
+  	}
+    res.status(200).send(response);
+  }
 });
 
 app.post('/signup', function(req, res) {
