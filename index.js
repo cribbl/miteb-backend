@@ -54,7 +54,7 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/signup', function(req, res) {
-  var username = req.body.username;
+  var username = req.body.username
   var response = {
     code: '',
     username: ''
@@ -65,7 +65,7 @@ app.post('/signup', function(req, res) {
       message: 'Username already exists'
     }
   }
-  if(username == "root") {
+  else if(username == "root") {
     response = {
       code: 'failed',
       message: 'Username not allowed'
@@ -74,7 +74,7 @@ app.post('/signup', function(req, res) {
   else {
     response = {
       code: 'success',
-      message: 'Signup successfull'
+      message: 'Signup successful'
     }
   }
   
