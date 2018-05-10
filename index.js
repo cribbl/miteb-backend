@@ -53,6 +53,34 @@ app.get('/login', function(req, res) {
     res.status(200).send("failed");
 });
 
+app.post('/signup', function(req, res) {
+  var username = req.body.username;
+  var response = {
+    code: '',
+    username: ''
+  }
+  if(username == "admin") {
+    response = {
+      code: 'failed',
+      message: 'Username already exists'
+    }
+  }
+  if(username == "root") {
+    response = {
+      code: 'failed',
+      message: 'Username not allowed'
+    }
+  }
+  else {
+    response = {
+      code: 'success',
+      message: 'Signup successfull'
+    }
+  }
+  
+  res.status(200).send(response);
+});
+
 app.get('/send-notif', function(req, res) {
       var token = String(req.query.token);
       var payload = req.query.payload;
