@@ -28,17 +28,17 @@ update_user_params = {
 	'newinfo': newinfo
 }
 
-r = requests.post('http://localhost:9000/signup', data = {'username':'df'})
+# r = requests.post('http://localhost:9000/signup', data = {'username':'df'})
 
-print r.text
+# print r.text
 
-# import urllib
-# import urllib3
+import urllib
+import urllib2
 
 
-# params = urllib.urlencode(update_user_params)
-# res = urllib2.urlopen("https://miteventbooking.herokuapp.com/login?username=admin&password=pass")
-# print res.read()
+params = urllib.urlencode(update_user_params)
+res = urllib2.urlopen("https://miteventbooking.herokuapp.com/login?username=admin&password=pass")
+print res.read()
 
 # import json
 # encoded_body = json.dumps({
