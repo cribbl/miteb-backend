@@ -4,6 +4,7 @@ const moment = require('moment');
 const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer')
+var cors = require('cors')
 
 // fetchRooms = require('./models/fetchRooms');
 
@@ -30,13 +31,15 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(cors())
+
 function datesBetween(start_date, end_date) {
       var start_date = moment(start_date);
       var end_date = moment(end_date);
 }
 
 
-app.get('/login', function(req, res) {
+app.get('/login', function(req, res, next) {
   var username = req.query.username
   var password = req.query.password
 
