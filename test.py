@@ -29,8 +29,21 @@ update_user_params = {
 }
 
 import urllib
-import urllib2
+import urllib3
 
-params = urllib.urlencode(update_user_params)
-res = urllib2.urlopen("http://localhost:9000/update-user?" + params)
-print res.read()
+
+# params = urllib.urlencode(update_user_params)
+# res = urllib2.urlopen("http://localhost:9000/signup?username=admin&password=pas")
+# print res.read()
+
+import json
+encoded_body = json.dumps({
+        "username": "admin",
+        "password": "password",
+    })
+
+http = urllib3.PoolManager()
+
+r = http.request('POST', 'http://localhost:9000/signup', body=encoded_body)
+
+print r.read() #

@@ -35,6 +35,24 @@ function datesBetween(start_date, end_date) {
       var end_date = moment(end_date);
 }
 
+
+app.get('/login', function(req, res) {
+  var username = req.query.username
+  var password = req.query.password
+
+  if(username == "admin" && password == "pass") {
+    var user = {
+      username: 'admin',
+      email: 'admin@gmail.com',
+      displayName: 'Mr. Admin',
+      phone: '9988776644'
+    };
+    res.status(200).send(user);
+  }
+  else
+    res.status(200).send("failed");
+});
+
 app.get('/send-notif', function(req, res) {
       var token = String(req.query.token);
       var payload = req.query.payload;
