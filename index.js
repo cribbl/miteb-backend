@@ -18,11 +18,7 @@ admin.initializeApp({
 const ref = admin.database().ref('rooms');
 
 app = express();
-
-app.get('/', function(req, res) {
-      res.status(200).send("Hello World!");
-});
-
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
@@ -31,7 +27,11 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(cors())
+
+app.get('/', function(req, res, next) {
+      res.status(200).send("Hello World!");
+});
+
 
 function datesBetween(start_date, end_date) {
       var start_date = moment(start_date);
@@ -65,7 +65,7 @@ app.get('/login', function(req, res, next) {
   }
 });
 
-app.post('/signup', function(req, res) {
+app.post('/signup', function(req, res, next) {
   var username = req.body.username
   var response = {
     code: '',
