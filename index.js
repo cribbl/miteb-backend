@@ -246,115 +246,46 @@ var room_arr = {
 
 var today = moment().format('DD-MM-YYYY');
 var yesterday = moment().add(-1, 'days').format('DD-MM-YYYY');
-var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY'); // stores date as today's date and month is incremented by 1 
+var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY'); // stores date as today's date and month is incremented by 1
 
 // Cron-job function for inserting new date
 app.get('/cron-room', function (req, res) {
-<<<<<<< Updated upstream
-  ref.child(futureDate).push(room_arr, function(err) {
-    if(err) {
-      res = {
-        code: 'failure',
-        message: err
-      }
-      res.status(200).send("error in 1st func : " + res);
-      return;
-    }
-
-    ref.child(today).set(room_arr, function(err) {
-      if(err) {
-        res = {
-          code: 'failure',
-          message: err
-        }
-        res.status(200).send("error in 2nd func : " + res);
-        return;
-      }
-
-      ref.child(yesterday).set(null, function(err) {
-        if(err) {
-          res = {
-            code: 'failure',
-            message: err
-          }
-          res.status(200).send("error in 3rd func : " + res);
-          return;
-        }
-      });
-    });
-  });
-
-  res = {
-    code: 'success',
-    message: "room-array updated for :" + futureDate;
-  }
-  res.status(200).send("error in 1st func : " + res);
-}
-=======
-  
-   ref.child(futureDate).push(room_arr, function(err) {
-       if(err) {
-   	response = {
-		code: 'failure',
-		message: 'Error in 1st function'
+ ref.child(futureDate).push(room_arr, function(err) {
+   if(err) {
+     response = {
+       code: 'failure',
+       message: err
+     }
+     res.status(200).send("error in 1st func : " + response);
+     return;
    }
-         res.status(200).send(response);
-         return;
-   }
-   
+
    ref.child(today).set(room_arr, function(err) {
-       if(err) {
-  	response = {
-		code: 'failure',
-		message: 'Error in 2nd function'
-   }
-         res.status(200).send(response);
-         return;
-   }
+     if(err) {
+       response = {
+         code: 'failure',
+         message: err
+       }
+       res.status(200).send("error in 2nd func : " + response);
+       return;
+     }
 
      ref.child(yesterday).set(null, function(err) {
        if(err) {
-    response = {
-		code: 'failure',
-		message: 'Error in 3rd function'
-   }
-         res.status(200).send(response);
+         response = {
+           code: 'failure',
+           message: err
+         }
+         res.status(200).send("error in 3rd func : " + response);
          return;
-   }
-
+       }
+     });
    });
-   });
-   });
- 		response = {
-		code: 'success',
-		message: 'Cron-Job successfully executed'
-   }
-         res.status(200).send(response);
-   });
+ });
 
-
- // exports.helloWorld = functions.https.onRequest((request, response)
- // .then(res => {
- //   response.send('Entered at new date in db');
- // })
- // .catch(err => {
- //   response.send(err);
- // });
-
- // ref.child(today).set(room_arr)
- //   .then(res => {
- //     response.send('Entered at /rooms in db');
- //   })
- //   .catch(err => {
- //     response.send(err);
- //   });
-
- // ref.child(yesterday).set(null)
- //   .then(res => {
- //     response.send('Removed from /rooms in db');
- //   })
- //   .catch(err => {
- //     response.send(err);
- //   });
- //  });
->>>>>>> Stashed changes
+ response = {
+   code: 'success',
+   message: "room-array updated for :" + futureDate
+ }
+ res.status(200).send("Success: " + response);
+});
