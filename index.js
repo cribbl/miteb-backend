@@ -252,25 +252,41 @@ var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY'); 
 app.get('/cron-room', function (req, res) {
  ref.child(futureDate).push(room_arr, function(err) {
    if(err) {
-     res.status().send("error in 1st func" + err);
+   		response = {
+		code: 'failure',
+		message: 'Error in 1st function'
+   }
+     res.status(200).send(response);
      return;
    }
    
    ref.child(today).set(room_arr, function(err) {
      if(err) {
-       res.status().send("error in 2nd" + err);
+  		response = {
+		code: 'failure',
+		message: 'Error in 2nd function'
+   }
+       res.status(200).send(response);
        return;
-     }
+   }
 
      ref.child(yesterday).set(null, function(err) {
        if(err) {
-         res.status().send("error in 3rd" + err);
+     	response = {
+		code: 'failure',
+		message: 'Error in 3rd function'
+   }
+         res.status(200).send(response);
          return;
        }
      });
    });
  });
- res.status().send("All 3 executed well")
+ 		response = {
+		code: 'success',
+		message: 'Cron-Job successfully executed'
+   }
+ res.status(200).send(response);
 });
 
 
