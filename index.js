@@ -201,11 +201,19 @@ app.get('/otp-gen', function(req,res){
     }
   })
   .then(function(){
-    res.send("OTP GENERATED " + otpgen);
+    response = {
+      code : 'success',
+      message : 'otp generated and stored in database'
+    };
+    res.status(200).send(response);
   })
   .catch(function(error){
-    console.log(error);
-  })
+    response = {
+      code : 'failure',
+      message : error
+    };
+    res.status(200).send(response);
+  });
 });
 
 const api = functions.https.onRequest(app);
