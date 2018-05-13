@@ -189,6 +189,20 @@ app.get('/fetch_rooms/', function(req, res) {
       res.status(200).send("done");
 });
 
+app.get('/otp-gen', function(req,res){
+  // var clubid = req.clubid
+  var otpgen = Math.floor(100000 + Math.random() * 900000);
+  var clubid = "DAAhD2EBqvQujYGITPAdBfZtZEH3";
+  var timest = admin.database.ServerValue.TIMESTAMP;
+  res.send({otpgen});
+  admin.database().ref('clubs/' + clubid).update({
+    OTP : {
+      code : otpgen,
+      time : timest
+    }
+  });
+});
+
 const api = functions.https.onRequest(app);
 
 
