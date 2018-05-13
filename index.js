@@ -194,13 +194,18 @@ app.get('/otp-gen', function(req,res){
   var otpgen = Math.floor(100000 + Math.random() * 900000);
   var clubid = "DAAhD2EBqvQujYGITPAdBfZtZEH3";
   var timest = admin.database.ServerValue.TIMESTAMP;
-  res.send({otpgen});
   admin.database().ref('clubs/' + clubid).update({
     OTP : {
       code : otpgen,
       time : timest
     }
-  });
+  })
+  .then(function(){
+    res.send("OTP GENERATED " + otpgen);
+  })
+  .catch(function(error){
+    console.log(error);
+  })
 });
 
 const api = functions.https.onRequest(app);
