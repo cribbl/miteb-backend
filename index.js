@@ -256,7 +256,7 @@ app.get('/cron-room', function (req, res) {
         code: 'failure',
         message: err
       }
-      res.send("error in 1st func : " + res);
+      res.status(200).send("error in 1st func : " + res);
       return;
     }
 
@@ -266,7 +266,7 @@ app.get('/cron-room', function (req, res) {
           code: 'failure',
           message: err
         }
-        res.send("error in 2nd func : " + res);
+        res.status(200).send("error in 2nd func : " + res);
         return;
       }
 
@@ -276,7 +276,7 @@ app.get('/cron-room', function (req, res) {
             code: 'failure',
             message: err
           }
-          res.send("error in 3rd func : " + res);
+          res.status(200).send("error in 3rd func : " + res);
           return;
         }
       });
@@ -287,5 +287,5 @@ app.get('/cron-room', function (req, res) {
     code: 'success',
     message: "room-array updated for :" + futureDate;
   }
-  res.send("error in 1st func : " + res);
+  res.status(200).send("error in 1st func : " + res);
 }
