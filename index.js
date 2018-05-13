@@ -5,7 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer')
 var cors = require('cors')
-var base_url="dev-miteventbooking.herokuapp.com";
+const base_url = "dev-miteventbooking.herokuapp.com";
 
 // fetchRooms = require('./models/fetchRooms');
 
@@ -248,29 +248,29 @@ var today = moment().format('DD-MM-YYYY');
 var yesterday = moment().add(-1, 'days').format('DD-MM-YYYY');
 var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY'); //stores date as today's date and month is incremented by 1 
 
-// Code for cron-job of inserting new date
+// Cron-job function for inserting new date
 app.get('/cron-room', function (req, res) {
  ref.child(futureDate).push(room_arr, function(err) {
    if(err) {
-     res.send("error in 1st func" + err);
+     res.status().send("error in 1st func" + err);
      return;
    }
    
    ref.child(today).set(room_arr, function(err) {
      if(err) {
-       res.send("error in 2nd" + err);
+       res.status().send("error in 2nd" + err);
        return;
      }
 
      ref.child(yesterday).set(null, function(err) {
        if(err) {
-         res.send("error in 3rd" + err);
+         res.status().send("error in 3rd" + err);
          return;
        }
      });
    });
  });
- res.send("All 3 executed well")
+ res.status().send("All 3 executed well")
 });
 
 
