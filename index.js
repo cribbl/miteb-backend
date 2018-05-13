@@ -274,48 +274,48 @@ var room_arr = {
       "5310" : false
     };
 
-var today = moment().format('DD-MM-YYYY');
-var yesterday = moment().add(-1, 'days').format('DD-MM-YYYY');
-var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY'); // stores date as today's date and month is incremented by 1
+    var today = moment().format('DD-MM-YYYY');
+    var yesterday = moment().add(-1, 'days').format('DD-MM-YYYY');
+    var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY'); // stores date as today's date and month is incremented by 1
 
 // Cron-job function for inserting new date
 app.get('/cron-room', function (req, res) {
- ref.child(futureDate).push(room_arr, function(err) {
-   if(err) {
-     response = {
-       code: 'failure',
-       message: err
-     }
-     res.status(200).send("error in 1st func : " + response);
-     return;
-   }
+	ref.child(futureDate).push(room_arr, function(err) {
+		if(err) {
+			response = {
+			code: 'failure',
+			message: err
+			}
+			res.status(200).send("error in 1st func : " + response);
+			return;
+		}
 
-   ref.child(today).set(room_arr, function(err) {
-     if(err) {
-       response = {
-         code: 'failure',
-         message: err
-       }
-       res.status(200).send("error in 2nd func : " + response);
-       return;
-     }
+	ref.child(today).set(room_arr, function(err) {
+		if(err) {
+			response = {
+			code: 'failure',
+			message: err
+			}
+			res.status(200).send("error in 2nd func : " + response);
+			return;
+			}
 
-     ref.child(yesterday).set(null, function(err) {
-       if(err) {
-         response = {
-           code: 'failure',
-           message: err
-         }
-         res.status(200).send("error in 3rd func : " + response);
-         return;
-       }
-     });
-   });
- });
+	ref.child(yesterday).set(null, function(err) {
+		if(err) {
+			response = {
+			code: 'failure',
+			message: err
+			}
+			res.status(200).send("error in 3rd func : " + response);
+			return;
+			}
+			});
+		});
+	});
 
- response = {
-   code: 'success',
-   message: "room-array updated for :" + futureDate
- }
- res.status(200).send("Success: " + response);
+			response = {
+			code: 'success',
+			message: "room-array updated for :" + futureDate
+			}
+	res.status(200).send("Success: " + response);
 });
