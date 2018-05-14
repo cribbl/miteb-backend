@@ -190,11 +190,11 @@ app.get('/fetch_rooms/', function(req, res) {
 });
 
 app.get('/send-otp', function(req,res){
-  var clubid = req.clubid;
+  var userID = req.query.userID;
   var code = Math.floor(100000 + Math.random() * 900000);
   var timestamp = admin.database.ServerValue.TIMESTAMP; // in millisecond
 
-  admin.database().ref('clubs/' + clubid).update({
+  admin.database().ref('clubs/' + userID).update({
     otp : {
       code : code,
       timestamp : timestamp
