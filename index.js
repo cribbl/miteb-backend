@@ -220,102 +220,96 @@ app.get('/send-otp', function(req,res){
   });
 });
 
-const api = functions.https.onRequest(app);
-
-
-module.exports = {
-      api
-}
-
-app.listen(process.env.PORT || 9000, function(){
-  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
-});
-
 var room_arr = {
-      "3101" : false,
-      "3102" : false,
-      "3103" : false,
-      "3104" : false,
-      "3105" : false,
-      "3201" : false,
-      "3202" : false,
-      "3203" : false,
-      "3204" : false,
-      "3205" : false,
-      "3301" : false,
-      "3302" : false,
-      "3303" : false,
-      "3304" : false,
-      "3305" : false,
-      "3401" : false,
-      "3402" : false,
-      "3403" : false,
-      "3404" : false,
-      "3405" : false,
-      "5201" : false,
-      "5202" : false,
-      "5203" : false,
-      "5204" : false,
-      "5205" : false,
-      "5206" : false,
-      "5207" : false,
-      "5208" : false,
-      "5209" : false,
-      "5210" : false,
-      "5301" : false,
-      "5302" : false,
-      "5303" : false,
-      "5304" : false,
-      "5305" : false,
-      "5306" : false,
-      "5307" : false,
-      "5308" : false,
-      "5309" : false,
-      "5310" : false
-    };
+  "3101" : false,
+  "3102" : false,
+  "3103" : false,
+  "3104" : false,
+  "3105" : false,
+  "3201" : false,
+  "3202" : false,
+  "3203" : false,
+  "3204" : false,
+  "3205" : false,
+  "3301" : false,
+  "3302" : false,
+  "3303" : false,
+  "3304" : false,
+  "3305" : false,
+  "3401" : false,
+  "3402" : false,
+  "3403" : false,
+  "3404" : false,
+  "3405" : false,
+  "5201" : false,
+  "5202" : false,
+  "5203" : false,
+  "5204" : false,
+  "5205" : false,
+  "5206" : false,
+  "5207" : false,
+  "5208" : false,
+  "5209" : false,
+  "5210" : false,
+  "5301" : false,
+  "5302" : false,
+  "5303" : false,
+  "5304" : false,
+  "5305" : false,
+  "5306" : false,
+  "5307" : false,
+  "5308" : false,
+  "5309" : false,
+  "5310" : false
+};
 
-    var today = moment().format('DD-MM-YYYY');
-    var yesterday = moment().add(-1, 'days').format('DD-MM-YYYY');
-    var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY'); // stores date as today's date and month is incremented by 1
+var today = moment().format('DD-MM-YYYY');
+var yesterday = moment().add(-1, 'days').format('DD-MM-YYYY');
+var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY'); // stores date as today's date and month is incremented by 1
 
 // Cron-job function for inserting new date
 app.get('/cron-room', function (req, res) {
-	ref.child(futureDate).push(room_arr, function(err) {
+	ref.child(futureDate).set(room_arr, function(err) {
 		if(err) {
 			response = {
-			code: 'failure',
-			message: err
+			 code: 'failure',
+			 message: err
 			}
-			res.status(200).send("error in 1st func : " + response);
-			return;
+		  res.status(200).send("error in 1st func : " + response);
+		  return;
 		}
 
-	ref.child(today).set(room_arr, function(err) {
-		if(err) {
-			response = {
-			code: 'failure',
-			message: err
-			}
-			res.status(200).send("error in 2nd func : " + response);
-			return;
-			}
+    ref.child(today).set(room_arr, function(err) {
+      if(err) {
+        response = {
+          code: 'failure',
+          message: err
+        }
+        res.status(200).send("error in 2nd func : " + response);
+        return;
+		  }
 
-	ref.child(yesterday).set(null, function(err) {
-		if(err) {
-			response = {
-			code: 'failure',
-			message: err
-			}
-			res.status(200).send("error in 3rd func : " + response);
-			return;
-			}
+      ref.child(yesterday).set(null, function(err) {
+        if(err) {
+          response = {
+            code: 'failure',
+            message: err
+          }
+          res.status(200).send("error in 3rd func : " + response);
+          return;
+        }
+        else {
+          response = {
+            code: 'success',
+            message: "room-array updated for :" + futureDate
+          }
+          res.status(200).send("Success: " + response);
+        }
 			});
 		});
 	});
+});
 
-			response = {
-			code: 'success',
-			message: "room-array updated for :" + futureDate
-			}
-	res.status(200).send("Success: " + response);
+app.listen(process.env.PORT || 9000, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
