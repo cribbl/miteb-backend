@@ -5,7 +5,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer')
 var cors = require('cors')
-
+var fs = require('fs');
+var pdf = require('html-pdf');
+var ejs = require('ejs');
 // fetchRooms = require('./models/fetchRooms');
 
 var serviceAccount = require("./config.json");
@@ -21,6 +23,11 @@ app = express();
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.set('view engine', 'ejs');
+
+
+app.use(express.static('views'));
+app.set('views', __dirname)
 // app.use(function(req, res, next) {
 //   res.header("Access-Control-Allow-Origin", "*");
 //   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -217,6 +224,33 @@ app.get('/send-otp', function(req,res){
     };
     res.status(200).send(response);
   });
+});
+
+app.get('/pdf-receipt', function(req,res){
+  // var eventid = req.query.eventID;
+
+  var eventid = "-LC52NRrYoR_JZgPsZzk";
+  var eventref = admin.database().ref('events/' + eventid);
+  var html;
+  ejs.renderFile('./eventpdf.ejs', {name : 'Priyam Agrawal', eventidd : eventid}, function(err, result) {
+    // render on success
+    if (result) {
+       html = result;
+    }
+    // render or error
+    else {
+       res.end('An error occurred');
+       console.log(err);
+    }
+});
+  var options = { filename: 'event-receipt.pdf', format: 'A4', orientation: 'portrait', directory: './phantomScripts/',type: "pdf" };
+
+pdf.create(html, options).toFile(function(err, res) {
+    if (err) return console.log(err);
+         console.log(res);
+    });
+  res.status(200).send(eventid);
+  
 });
 
 const api = functions.https.onRequest(app);
