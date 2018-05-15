@@ -266,14 +266,16 @@ var room_arr = {
   "5310" : false
 };
 
-var today = moment().format('DD-MM-YYYY');
-var yesterday = moment().add(-1, 'days').format('DD-MM-YYYY');
-var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY'); // stores date as today's date and month is incremented by 1
 
 // Cron-job function for inserting new date
 app.get('/cron-room', function (req, res) {
-	ref.child(futureDate).set(room_arr, function(err) {
-		if(err) {
+
+  var today = moment().format('DD-MM-YYYY');
+  var yesterday = moment().add(-1, 'days').format('DD-MM-YYYY');
+  var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY'); // stores date as today's date and month is incremented by 1
+
+  ref.child(futureDate).set(room_arr, function(err) {
+    if(err) {
 			response = {
 			 code: 'failure',
 			 message: err
