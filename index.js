@@ -190,24 +190,27 @@ app.get('/fetch_rooms/', function(req, res) {
       res.status(200).send("done");
 });
 
-app.get('/send-otp', function(req,res){
+app.get('/send-otp', function(req,res) {
   var userID = req.query.userID;
-  var code = Math.floor(100000 + Math.random() * 900000);
-  var timestamp = admin.database.ServerValue.TIMESTAMP; // in millisecond
+  var contact = req.query.contact;
+  console.log(req.query);
 
-  admin.database().ref('clubs/' + userID).update({
-    otp : {
+  console.log(userID + " ==== " + contact)
+
+  var code = Math.floor(100000 + Math.random() * 900000);
+  var timestamp = new Date().getTime();
+
+  admin.database().ref('otp/' + userID).update({
       code : code,
       timestamp : timestamp
-    }
   })
   .then(function(){
     response = {
       code : 'success',
-      message : 'OTP was generated and stored in database'
+      message : 'OTP was generated and stored in database' + code
     };
 
-    // { } here will come the code to send the OTP via SMS
+    // (contact, code) { } here will come the code to send the OTP via SMS
 
     res.status(200).send(response);
   })
