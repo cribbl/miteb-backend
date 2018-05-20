@@ -1,19 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Event Receipt</title>
+<style>
+body {
+    text-align: center;
+    width: 100%;
+}
+table, th, td {
+   border: 1px solid black;
+   border-collapse: collapse;
+}
+th, td {
+   padding: 5px;
+}
+th {
+   text-align: left;
+}
+</style>
 </head>
 <body>
-<h1>MIT</h1>
-<table>
-	<tr>
-		<td>Name</td>
-		<td><%= name %></td>
-	</tr>
-	<tr>
-		<td>Eveve</td>
-		<td><%= eventidd %></td>
-	</tr>
+<center>
+<div style="height: 20px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Ieee_blue.jpg" style="float: left; width: 30%;">
+    <img src="http://websismit.manipal.edu/MU%20logo%201.jpg" style="float: right; width: 30%; margin-right: 20px;    ">
+</div>
+<br><br><br><br><br><br>
+<h2>MIT EVENT BOOKING</h2>
+<p style="background: black; width: 90%">To left-align the table headings, use the CSS text-align property.</p>
+
+<table style="width:90%; margin: 20px">
+<caption style="text-align: left; font-weight: 700">Booker Details</caption>
+ <tr>
+   <td style="width: 30%">Name</td>
+   <td><%= name %></td>
+ </tr>
+ <tr>
+   <td style="width: 30%">Contact</td>
+   <td><%= contact %></td>
+ </tr>
+ <tr>
+   <td style="width: 30%">Reg No</td>
+   <td><%= regno %></td>
+ </tr>
 </table>
+
+<table style="width:90%; margin: 20px">
+<caption style="text-align: left; font-weight: 700">Event Details</caption>
+ <tr>
+   <td style="width: 30%">Title</td>
+   <td><%= title %></td>
+ </tr>
+ <tr>
+   <td style="width: 30%">Start Date</td>
+   <td><%= sdate %></td>
+ </tr>
+ <tr>
+   <td style="width: 30%">End Date</td>
+   <td><%= sdate %></td>
+ </tr>
+</table>
+<br><br><br><br>
+
+<div style="display: inline-block;">
+	<img src="https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Signature_of_Ratan_Tata.svg/1280px-Signature_of_Ratan_Tata.svg.png" style="width: 25%; padding-right: 10%">
+	<img src="https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Signature_of_Ratan_Tata.svg/1280px-Signature_of_Ratan_Tata.svg.png" style="width: 25%">
+	<img src="https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Signature_of_Ratan_Tata.svg/1280px-Signature_of_Ratan_Tata.svg.png" style="width: 25%;padding-left: 10%">	
+</div>
+
+</center>
 </body>
 </html>

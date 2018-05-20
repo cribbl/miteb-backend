@@ -8,6 +8,7 @@ var cors = require('cors')
 var fs = require('fs');
 var pdf = require('html-pdf');
 var ejs = require('ejs');
+
 // fetchRooms = require('./models/fetchRooms');
 
 var serviceAccount = require("./config.json");
@@ -229,26 +230,37 @@ app.get('/send-otp', function(req,res){
 app.get('/pdf-receipt', function(req,res){
   // var eventid = req.query.eventID;
 
-  var eventid = "-LC52NRrYoR_JZgPsZzk";
+  var eventid = "-LCdzWjMGmo6fpiI4_qf";
   var eventref = admin.database().ref('events/' + eventid);
-  var html;
-  ejs.renderFile('./eventpdf.ejs', {name : 'Priyam Agrawal', eventidd : eventid}, function(err, result) {
-    // render on success
-    if (result) {
-       html = result;
-    }
-    // render or error
-    else {
-       res.end('An error occurred');
-       console.log(err);
-    }
-});
-  var options = { filename: 'event-receipt.pdf', format: 'A4', orientation: 'portrait', directory: './phantomScripts/',type: "pdf" };
+  eventref.on("value", function(snapshot) {
+    var html;
+    ejs.renderFile('./eventpdf.ejs', {
+      name : snapshot.val().booker_name,
+      contact : snapshot.val().booker_contact,
+      regno : snapshot.val().booker_reg_no,
+      title : snapshot.val().title,
+      sdate : snapshot.val().start_date,
+      edate : snapshot.val().end_date
+    }, function(err, result) {
+      // render on success
+      if (result) {
+         html = result;
+      }
+      // render or error
+      else {
+         res.end('An error occurred');
+         console.log(err);
+      }
+  });
+    var options = { filename: 'event-receipt.pdf', format: 'A4', orientation: 'portrait', directory: './phantomScripts/',type: "pdf" };
 
-pdf.create(html, options).toFile(function(err, res) {
-    if (err) return console.log(err);
-         console.log(res);
-    });
+  pdf.create(html, options).toFile(function(err, res) {
+      if (err) return console.log(err);
+           console.log(res);
+      });
+  }, function (error) {
+     console.log("Error: " + error.code);
+});
   res.status(200).send(eventid);
   
 });
