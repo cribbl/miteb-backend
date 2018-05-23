@@ -1,72 +1,150 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body {
-    text-align: center;
-    width: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: 'helvetica';
+  height: 842px;
+  width:  595px;
+  position: relative;
 }
+
+.left {
+  float: left;
+  background-color: ;
+}
+
+.right {
+  background-color: ;
+  float: right;
+}
+
+.header {
+  align-items: center;
+  
+  height: 100px;
+
+  padding: 10px;
+  margin: 0;
+}
+
+.header img {
+  max-width: 30%;
+  height: 100px;
+}
+
+.label {
+  background-color: black;
+  color: white;
+  height: 20px;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.label h5 {
+  margin: 0;
+}
+
+.signatures {
+  width: 100%;
+}
+
+.signatures p {
+  margin: 5px;
+}
+
+.signatures img {
+  max-width: 80%;
+}
+
 table, th, td {
-   border: 1px solid black;
-   border-collapse: collapse;
+    border: 1px solid black;
+    border-collapse: collapse;
 }
 th, td {
-   padding: 5px;
+    padding: 5px;
 }
 th {
-   text-align: left;
+    text-align: left;
 }
 </style>
 </head>
 <body>
-<center>
-<div style="height: 20px;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Ieee_blue.jpg" style="float: left; width: 30%;">
-    <img src="http://websismit.manipal.edu/MU%20logo%201.jpg" style="float: right; width: 30%; margin-right: 20px;    ">
-</div>
-<br><br><br><br><br><br>
-<h2>MIT EVENT BOOKING</h2>
-<p style="background: black; width: 90%">To left-align the table headings, use the CSS text-align property.</p>
+  <center>
+    <div class="header">
+        <img class="left" src="https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/Fq10VDgTdAf7t4o4sEUrgY08rGg2%2FprofilePic?alt=media&token=4545a6cc-524e-4e24-9c75-7b022ba6ccd2">
 
-<table style="width:90%; margin: 20px">
-<caption style="text-align: left; font-weight: 700">Booker Details</caption>
- <tr>
-   <td style="width: 30%">Name</td>
-   <td><%= name %></td>
- </tr>
- <tr>
-   <td style="width: 30%">Contact</td>
-   <td><%= contact %></td>
- </tr>
- <tr>
-   <td style="width: 30%">Reg No</td>
-   <td><%= regno %></td>
- </tr>
-</table>
+        <img class="right" style="max-width: 300px;" src="http://smartstudents.co.in/org_images/115/smartstudents-mit-manipal.png">
+    </div>
+    
+    <div class="label">
+      <h5 class="left">Event Booking</h5>
+      <h5 class="right">Dummy MIT Club</h5>
+    </div>
 
-<table style="width:90%; margin: 20px">
-<caption style="text-align: left; font-weight: 700">Event Details</caption>
- <tr>
-   <td style="width: 30%">Title</td>
-   <td><%= title %></td>
- </tr>
- <tr>
-   <td style="width: 30%">Start Date</td>
-   <td><%= sdate %></td>
- </tr>
- <tr>
-   <td style="width: 30%">End Date</td>
-   <td><%= sdate %></td>
- </tr>
-</table>
-<br><br><br><br>
+    <div>
+      <table style="width:100%; margin: 20px">
+      <caption style="text-align: left; font-weight: 700">Booker Details</caption>
+        <tr>
+          <td style="width: 30%">Name</td>
+          <td><%= booker_name %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">Reg No</td>
+          <td><%= booker_reg_no %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">Contact</td>
+          <td><%= booker_contact %></td>
+        </tr>
+      </table>
 
-<div style="display: inline-block;">
-	<img src="https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Signature_of_Ratan_Tata.svg/1280px-Signature_of_Ratan_Tata.svg.png" style="width: 25%; padding-right: 10%">
-	<img src="https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Signature_of_Ratan_Tata.svg/1280px-Signature_of_Ratan_Tata.svg.png" style="width: 25%">
-	<img src="https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Signature_of_Ratan_Tata.svg/1280px-Signature_of_Ratan_Tata.svg.png" style="width: 25%;padding-left: 10%">	
-</div>
+      <table style="width:100%; margin: 20px">
+      <caption style="text-align: left; font-weight: 700">Event Details</caption>
+        <tr>
+          <td style="width: 30%">Title</td>
+          <td><%= title %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">Start Date</td>
+          <td><%= start_date %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">End Date</td>
+          <td><%= end_date %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">Rooms</td>
+          <td>AB5 201, 202</td>
+        </tr>
+      </table>
+    </div>
 
-</center>
+    <div class="signatures" style="display: inline-block;">
+      <div class="left" style="width: 33%">
+        <img src="https://test.materialcoder.com/project/home/images/signature-scan.png">
+        <p>FacAd Pai</p>
+        <p>Faculty Advisor</p>
+        <p>09-05-2018</p>
+      </div>
+      <div style="width: 33%; background-color: ; display: inline-block;">
+        <img src="https://test.materialcoder.com/project/home/images/signature-scan.png">
+        <p>Narayana Shenoy</p>
+        <p>Associate Director</p>
+        <p>10-05-2018</p>
+      </div>
+      <div class="right" style="width: 33%">
+        <img src="https://test.materialcoder.com/project/home/images/signature-scan.png">
+        <p>Ashok Rao</p>
+        <p>Security Officer</p>
+        <p>10-05-2018</p>
+      </div>
+    </div>
+
+  </center>
 </body>
 </html>
