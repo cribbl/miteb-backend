@@ -235,12 +235,12 @@ app.get('/pdf-receipt', function(req,res){
   eventref.on("value", function(snapshot) {
     var html;
     ejs.renderFile('./eventpdf.ejs', {
-      name : snapshot.val().booker_name,
-      contact : snapshot.val().booker_contact,
-      regno : snapshot.val().booker_reg_no,
+      booker_name : snapshot.val().booker_name,
+      booker_contact : snapshot.val().booker_contact,
+      booker_reg_no : snapshot.val().booker_reg_no,
       title : snapshot.val().title,
-      sdate : snapshot.val().start_date,
-      edate : snapshot.val().end_date
+      start_date : snapshot.val().start_date,
+      end_date : snapshot.val().end_date
     }, function(err, result) {
       // render on success
       if (result) {
@@ -252,16 +252,23 @@ app.get('/pdf-receipt', function(req,res){
          console.log(err);
       }
   });
-    var options = { filename: 'event-receipt.pdf', format: 'A4', orientation: 'portrait', directory: './phantomScripts/',type: "pdf" };
+    var options = {
+      filename: 'event-receipt.pdf',
+      height: "842px",
+      width: "595px",
+      orientation: 'portrait',
+      type: "pdf",
+      border: "10"
+    };
 
-  pdf.create(html, options).toFile(function(err, res) {
+  pdf.create(html, options).toFile(function(err, result) {
       if (err) return console.log(err);
            console.log(res);
+           res.status(200).send(eventid);
       });
   }, function (error) {
      console.log("Error: " + error.code);
 });
-  res.status(200).send(eventid);
   
 });
 
