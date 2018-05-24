@@ -16,12 +16,16 @@ admin.initializeApp({
   databaseURL: "https://mit-clubs-management.firebaseio.com"
 });
 
-const ref = admin.database().ref('rooms');
+const ref = admin.database();
 
 app = express();
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+const ad_uid = "DAAhD2EBqvQujYGITPAdBfZtZEH3";
+const so_uid = "raMsWfP6m9dlNl6T6k7jTnfGlxG3";
+
 // app.use(function(req, res, next) {
 //   res.header("Access-Control-Allow-Origin", "*");
 //   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -94,20 +98,33 @@ app.post('/signup', function(req, res, next) {
   res.status(200).send(response);
 });
 
-app.get('/send-notif', function(req, res) {
-      var token = String(req.query.token);
-      var payload = req.query.payload;
-      console.log(payload);
+app.post('/send-notif', function(req, res) {
+      // var uid = String(req.body.uid);
+      var uid;
+      var payload = req.body.payload;
+      switch(req.body.uid) {
+              case "AD": uid = ad_uid; break;
+              case "SO": uid = so_uid; break;
+              default: uid = req.body.uid;
+            }
 
-      admin.messaging().sendToDevice(token, payload)
-      .then(function(resp) {
-            console.log("sent" + resp);
-            res.status(200).send("sent")
+      admin.database().ref('fcmTokens/' + uid).once('value', function(snapshot) {
+        for(let token in snapshot.val()) {
+          if(snapshot.val()[token] == true) {
+            admin.messaging().sendToDevice(token, payload)
+            .then(function(resp) {
+              // res.status(200).send(resp)
+              console.log(resp)
+            })
+            .catch(function(err) {
+              console.log("error" + err);
+              res.status(302).send("error");
+            })
+          }
+        }
+        res.status(200).send("done")
       })
-      .catch(function(err) {
-            console.log("error" + err);
-            res.status(302).send("error");
-      })
+
 })
 
 app.post('/send-email', function(req, res) {
