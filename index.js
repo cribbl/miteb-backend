@@ -101,8 +101,7 @@ app.post('/signup', function(req, res, next) {
 app.post('/send-notif', function(req, res) {
       // var uid = String(req.body.uid);
       var uid;
-      var response;
-      var notificationOptions = req.body.notificationOptions;
+      var payload = req.body.payload;
       switch(req.body.uid) {
               case "AD": uid = ad_uid; break;
               case "SO": uid = so_uid; break;
@@ -112,11 +111,11 @@ app.post('/send-notif', function(req, res) {
       admin.database().ref('fcmTokens/' + uid).once('value', function(snapshot) {
         for(let token in snapshot.val()) {
           if(snapshot.val()[token] == true) {
-            admin.messaging().sendToDevice(token, notificationOptions)
+            admin.messaging().sendToDevice(token, payload)
             .then(function(resp) {
               // res.status(200).send(resp)
-              resp = response;
               console.log(resp)
+              res.status(200).send("done")
             })
             .catch(function(err) {
               console.log("error" + err);
@@ -124,7 +123,6 @@ app.post('/send-notif', function(req, res) {
             })
           }
         }
-        res.status(200).send(response);
       })
 
 })
