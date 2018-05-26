@@ -83,7 +83,7 @@ th {
     
     <div class="label">
       <h5 class="left">Event Booking</h5>
-      <h5 class="right">Dummy MIT Club</h5>
+      <h5 class="right"><%= club_name %></h5>
     </div>
 
     <div>
@@ -110,6 +110,10 @@ th {
           <td><%= title %></td>
         </tr>
         <tr>
+          <td style="width: 30%">Type</td>
+          <td><%= type %></td>
+        </tr>
+        <tr>
           <td style="width: 30%">Start Date</td>
           <td><%= start_date %></td>
         </tr>
@@ -119,25 +123,29 @@ th {
         </tr>
         <tr>
           <td style="width: 30%">Rooms</td>
-          <td>AB5 201, 202</td>
+          <td><%= room_list %></td>
+        </tr>
+        <tr style="visibility: <%= isVisible %>;">
+          <td style="width: 30%">Notes</td>
+          <td><%= Notes %></td>
         </tr>
       </table>
     </div>
 
     <div class="signatures" style="display: inline-block;">
-      <div class="left" style="width: 33%">
+      <div class="left" style="width: 28%; padding-left: 10px">
         <img src="https://test.materialcoder.com/project/home/images/signature-scan.png">
         <p>FacAd Pai</p>
         <p>Faculty Advisor</p>
         <p>09-05-2018</p>
       </div>
-      <div style="width: 33%; background-color: ; display: inline-block;">
+      <div style="width: 28%; background-color: ; display: inline-block; padding-left: 10px;">
         <img src="https://test.materialcoder.com/project/home/images/signature-scan.png">
         <p>Narayana Shenoy</p>
         <p>Associate Director</p>
         <p>10-05-2018</p>
       </div>
-      <div class="right" style="width: 33%">
+      <div class="right" style="width: 28%; padding-left: 10px;">
         <img src="https://test.materialcoder.com/project/home/images/signature-scan.png">
         <p>Ashok Rao</p>
         <p>Security Officer</p>
