@@ -230,17 +230,42 @@ app.get('/send-otp', function(req,res){
 app.get('/pdf-receipt', function(req,res){
   // var eventid = req.query.eventID;
 
-  var eventid = "-LCdzWjMGmo6fpiI4_qf";
+  var eventid = "-LDAUHIpM1VHad8MVxaL";
+  // var eventid = "-LDIKlEC2c-EkzhX_RpK";
   var eventref = admin.database().ref('events/' + eventid);
   eventref.on("value", function(snapshot) {
     var html;
+    // Room selecting logic
+    var rooms = snapshot.val().rooms;
+    var roomlist = "";
+    // determines the academic block according to the first digit as array index
+    var room_block = ["AB-1","AB-2","NLH","IC","AB-5"];
+    rooms.forEach(function(room){
+      var block = Math.floor(room/1000) - 1;
+      var room_no = room%1000;
+      block = room_block[block];
+      roomlist+=block + "-" + room_no + ",";
+    });
+    roomlist = roomlist.replace(/,\s*$/, "");
+    var notes;
+    var visibility = "hidden";
+    if(snapshot.val().notes)
+    {
+      notes = snapshot.val().notes;
+      visibility = "visible";
+    }
     ejs.renderFile('./eventpdf.ejs', {
+      club_name : snapshot.val().clubName,
       booker_name : snapshot.val().booker_name,
       booker_contact : snapshot.val().booker_contact,
       booker_reg_no : snapshot.val().booker_reg_no,
       title : snapshot.val().title,
+      type : snapshot.val().type,
       start_date : snapshot.val().start_date,
-      end_date : snapshot.val().end_date
+      end_date : snapshot.val().end_date,
+      room_list : roomlist,
+      isVisible : visibility,
+      Notes : notes
     }, function(err, result) {
       // render on success
       if (result) {
@@ -255,7 +280,7 @@ app.get('/pdf-receipt', function(req,res){
     var options = {
       filename: 'event-receipt.pdf',
       height: "842px",
-      width: "595px",
+      width: "650px",
       orientation: 'portrait',
       type: "pdf",
       border: "10"
@@ -263,7 +288,7 @@ app.get('/pdf-receipt', function(req,res){
 
   pdf.create(html, options).toFile(function(err, result) {
       if (err) return console.log(err);
-           console.log(res);
+           // console.log(res);
            res.status(200).send(eventid);
       });
   }, function (error) {
