@@ -98,10 +98,10 @@ app.post('/signup', function(req, res, next) {
   res.status(200).send(response);
 });
 
-app.post('/send-notif', function(req, res) {
+app.post('/send-notif', function(req, res, next) {
       // var uid = String(req.body.uid);
       var uid;
-      var response=[];
+      var notifResponse=[];
       var payload = req.body.payload;
       switch(req.body.uid) {
               case "AD": uid = ad_uid; break;
@@ -116,7 +116,7 @@ app.post('/send-notif', function(req, res) {
             .then(function(resp) {
               // res.status(200).send(resp)
               console.log(resp)
-              response.push(resp);
+              notifResponse.push(resp);
             })
             .catch(function(err) {
               console.log("error" + err);
@@ -124,7 +124,7 @@ app.post('/send-notif', function(req, res) {
             })
           }
         }
-        res.status(200).send(response)
+        res.status(200).send(notifResponse)
       })
 
 })
