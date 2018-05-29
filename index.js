@@ -102,7 +102,8 @@ app.post('/send-notif', function(req, res, next) {
       // var uid = String(req.body.uid);
       var uid;
       var notifResponse=[];
-      var payload = req.body.payload;
+      var notifOptions = req.body.notificationOptions;
+      console.log(notifOptions)
       switch(req.body.uid) {
               case "AD": uid = ad_uid; break;
               case "SO": uid = so_uid; break;
@@ -112,7 +113,7 @@ app.post('/send-notif', function(req, res, next) {
       admin.database().ref('fcmTokens/' + uid).once('value', function(snapshot) {
         for(let token in snapshot.val()) {
           if(snapshot.val()[token] == true) {
-            admin.messaging().sendToDevice(token, payload)
+            admin.messaging().sendToDevice(token, notifOptions)
             .then(function(resp) {
               // res.status(200).send(resp)
               console.log(resp)
