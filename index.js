@@ -8,6 +8,7 @@ var cors = require('cors')
 var fs = require('fs');
 var pdf = require('html-pdf');
 var ejs = require('ejs');
+const base_url = "dev-miteventbooking.herokuapp.com";
 
 // fetchRooms = require('./models/fetchRooms');
 
@@ -21,6 +22,7 @@ admin.initializeApp({
 const ref = admin.database().ref('rooms');
 const AD_NAME = "Naranaya Shenoy"
 const SO_NAME = "Ashok Rao"
+const ref = admin.database();
 
 app = express();
 app.use(cors())
@@ -31,122 +33,73 @@ app.set('view engine', 'ejs');
 
 app.use(express.static('views'));
 app.set('views', __dirname)
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
 
+const ad_uid = "DAAhD2EBqvQujYGITPAdBfZtZEH3";
+const so_uid = "raMsWfP6m9dlNl6T6k7jTnfGlxG3";
 
 app.get('/', function(req, res, next) {
       res.status(200).send("Hello World!");
 });
 
+app.post('/send-notif', function(req, res, next) {
+  // var uid = String(req.body.uid);
+  var uid;
+  var notifResponse=[];
+  var notifOptions = req.body.notificationOptions;
+  console.log(notifOptions)
+  switch(req.body.uid) {
+          case "AD": uid = ad_uid; break;
+          case "SO": uid = so_uid; break;
+          default: uid = req.body.uid;
+        }
 
-function datesBetween(start_date, end_date) {
-      var start_date = moment(start_date);
-      var end_date = moment(end_date);
-}
-
-
-app.get('/login', function(req, res, next) {
-  var username = req.query.username
-  var password = req.query.password
-  
-  if(username == "admin" && password == "pass") {
-  	var user = {
-  	  username: 'admin',
-  	  email: 'admin@gmail.com',
-  	  displayName: 'Mr. Admin',
-  	  phone: '9988776644'
-  	};
-  	response = {
-  		code: 'success',
-  		user: user
-  	}
-    res.status(200).send(response);
-  }
-  else {
-  	response = {
-  		code: 'failed',
-  		user: null
-  	}
-    res.status(200).send(response);
-  }
-});
-
-app.post('/signup', function(req, res, next) {
-  var username = req.body.username
-  var response = {
-    code: '',
-    username: ''
-  }
-  if(username == "admin") {
-    response = {
-      code: 'failed',
-      message: 'Username already exists'
+  admin.database().ref('fcmTokens/' + uid).once('value', function(snapshot) {
+    for(let token in snapshot.val()) {
+      if(snapshot.val()[token] == true) {
+        admin.messaging().sendToDevice(token, notifOptions)
+        .then(function(resp) {
+          // res.status(200).send(resp)
+          console.log(resp)
+          notifResponse.push(resp);
+        })
+        .catch(function(err) {
+          console.log("error" + err);
+          res.status(302).send("error");
+        })
+      }
     }
-  }
-  else if(username == "root") {
-    response = {
-      code: 'failed',
-      message: 'Username not allowed'
-    }
-  }
-  else {
-    response = {
-      code: 'success',
-      message: 'Signup successful'
-    }
-  }
-  
-  res.status(200).send(response);
-});
-
-app.get('/send-notif', function(req, res) {
-      var token = String(req.query.token);
-      var payload = req.query.payload;
-      console.log(payload);
-
-      admin.messaging().sendToDevice(token, payload)
-      .then(function(resp) {
-            console.log("sent" + resp);
-            res.status(200).send("sent")
-      })
-      .catch(function(err) {
-            console.log("error" + err);
-            res.status(302).send("error");
-      })
+    res.status(200).send(notifResponse)
+  })
 })
 
 app.post('/send-email', function(req, res) {
   var params = req.body;
   console.log(params);
   var transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true, // use SSL
-      auth: {
-          user: '***REMOVED***',
-          pass: '***REMOVED***'
-      }
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // use SSL
+    auth: {
+        user: '***REMOVED***',
+        pass: '***REMOVED***'
+    }
   });
   var mailOptions = {
-      from: params.senderEmail, // sender address (who sends)
-      to: params.to, // list of receivers (who receives)
-      subject: params.subject, // Subject line
-      text: params.text, // plaintext body
-      html: params.html // html body
+    from: params.senderEmail, // sender address (who sends)
+    to: params.to, // list of receivers (who receives)
+    subject: params.subject, // Subject line
+    text: params.text, // plaintext body
+    html: params.html // html body
   };
 
   // send mail with defined transport object
   transporter.sendMail(mailOptions, function(error, info){
-      if(error){
-          return console.log(error);
-          res.status(302).send(error);
-      }
-      console.log('Message sent: ' + info.response);
-      res.status(200).send(info.response);
+    if(error){
+      return console.log(error);
+      res.status(302).send(error);
+    }
+    console.log('Message sent: ' + info.response);
+    res.status(200).send(info.response);
   });
 })
 
@@ -173,50 +126,27 @@ app.get('/update-user', function(req, res) {
     });
 })
 
-app.get('/fetch_rooms/', function(req, res) {
-      var start_date = String(req.query.start_date);
-      var end_date = String(req.query.end_date);
-
-      var date = start_date;
-
-      res.setHeader('Content-Type', 'text/plain');
-
-      res.write(start_date);
-      res.write(end_date);
-      res.write(date);
-
-      while(date != end_date) {
-            date = moment(date).add(1, 'days').format('DD-MM-YYYY');
-            res.write(date);
-            ref.child(date).once('value')
-                  .then(function(snapshot) {
-                        res.write(snapshot);
-                  })
-                  .catch(err => {
-                        res.write(err);
-                  });
-      }
-      res.status(200).send("done");
-});
-
-app.get('/send-otp', function(req,res){
+app.get('/send-otp', function(req,res) {
   var userID = req.query.userID;
-  var code = Math.floor(100000 + Math.random() * 900000);
-  var timestamp = admin.database.ServerValue.TIMESTAMP; // in millisecond
+  var contact = req.query.contact;
+  console.log(req.query);
 
-  admin.database().ref('clubs/' + userID).update({
-    otp : {
+  console.log(userID + " ==== " + contact)
+
+  var code = Math.floor(100000 + Math.random() * 900000);
+  var timestamp = new Date().getTime();
+
+  admin.database().ref('otp/' + userID).update({
       code : code,
       timestamp : timestamp
-    }
   })
   .then(function(){
     response = {
       code : 'success',
-      message : 'OTP was generated and stored in database'
+      message : 'OTP was generated and stored in database' + code
     };
 
-    // { } here will come the code to send the OTP via SMS
+    // (contact, code) { } here will come the code to send the OTP via SMS
 
     res.status(200).send(response);
   })
@@ -315,67 +245,3 @@ module.exports = {
 app.listen(process.env.PORT || 9000, function(){
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
-
-// var room_arr = {
-//       "3101" : false,
-//       "3102" : false,
-//       "3103" : false,
-//       "3104" : false,
-//       "3105" : false,
-//       "3201" : false,
-//       "3202" : false,
-//       "3203" : false,
-//       "3204" : false,
-//       "3205" : false,
-//       "3301" : false,
-//       "3302" : false,
-//       "3303" : false,
-//       "3304" : false,
-//       "3305" : false,
-//       "3401" : false,
-//       "3402" : false,
-//       "3403" : false,
-//       "3404" : false,
-//       "3405" : false,
-//       "5201" : false,
-//       "5202" : false,
-//       "5203" : false,
-//       "5204" : false,
-//       "5205" : false,
-//       "5206" : false,
-//       "5207" : false,
-//       "5208" : false,
-//       "5209" : false,
-//       "5210" : false,
-//       "5301" : false,
-//       "5302" : false,
-//       "5303" : false,
-//       "5304" : false,
-//       "5305" : false,
-//       "5306" : false,
-//       "5307" : false,
-//       "5308" : false,
-//       "5309" : false,
-//       "5310" : false
-//     };
-
-// var today = moment().format('DD-MM-YYYY');
-// var yesterday = moment().add(-1, 'days').format('DD-MM-YYYY');
-
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  ref.child(today).set(room_arr)
-//    .then(res => {
-//      response.send('Entered at /rooms in db');
-//    })
-//    .catch(err => {
-//      response.send(err);
-//    });
-
-//  ref.child(yesterday).set(null)
-//    .then(res => {
-//      response.send('Removed from /rooms in db');
-//    })
-//    .catch(err => {
-//      response.send(err);
-//    });
-//  });
