@@ -19,6 +19,8 @@ admin.initializeApp({
 });
 
 const ref = admin.database().ref('rooms');
+const AD_NAME = "Naranaya Shenoy"
+const SO_NAME = "Ashok Rao"
 
 app = express();
 app.use(cors())
@@ -230,7 +232,7 @@ app.get('/send-otp', function(req,res){
 app.get('/pdf-receipt', function(req,res){
   // var eventid = req.query.eventID;
 
-  var eventid = "-LDAUHIpM1VHad8MVxaL";
+  var eventid = "-LD8H1FvjaD6m-qHdr_P";
   // var eventid = "-LDIKlEC2c-EkzhX_RpK";
   var eventref = admin.database().ref('events/' + eventid);
   eventref.on("value", function(snapshot) {
@@ -244,7 +246,7 @@ app.get('/pdf-receipt', function(req,res){
       var block = Math.floor(room/1000) - 1;
       var room_no = room%1000;
       block = room_block[block];
-      roomlist+=block + "-" + room_no + ",";
+      roomlist+=block + "-" + room_no + ", ";
     });
     roomlist = roomlist.replace(/,\s*$/, "");
     var notes;
@@ -255,17 +257,23 @@ app.get('/pdf-receipt', function(req,res){
       visibility = "visible";
     }
     ejs.renderFile('./eventpdf.ejs', {
-      club_name : snapshot.val().clubName,
-      booker_name : snapshot.val().booker_name,
-      booker_contact : snapshot.val().booker_contact,
-      booker_reg_no : snapshot.val().booker_reg_no,
-      title : snapshot.val().title,
-      type : snapshot.val().type,
-      start_date : snapshot.val().start_date,
-      end_date : snapshot.val().end_date,
-      room_list : roomlist,
-      isVisible : visibility,
-      Notes : notes
+      club_name: snapshot.val().clubName,
+      booker_name: snapshot.val().booker_name,
+      booker_contact: snapshot.val().booker_contact,
+      booker_reg_no: snapshot.val().booker_reg_no,
+      title: snapshot.val().title,
+      type: snapshot.val().type,
+      start_date: moment(snapshot.val().start_date, 'DD-MM-YYYY').format("dddd, DD MMM YYYY"),
+      end_date: moment(snapshot.val().end_date, 'DD-MM-YYYY').format("dddd, DD MMM YYYY"),
+      room_list: roomlist,
+      isVisible: visibility,
+      Notes: notes,
+      fa_name: snapshot.val().FA_name,
+      ad_name: AD_NAME,
+      so_name: SO_NAME,
+      fa_date: snapshot.val().FA_date,
+      ad_date: snapshot.val().AD_date,
+      so_date: snapshot.val().SO_date,
     }, function(err, result) {
       // render on success
       if (result) {
@@ -279,7 +287,7 @@ app.get('/pdf-receipt', function(req,res){
   });
     var options = {
       filename: 'event-receipt.pdf',
-      height: "842px",
+      height: "870px",
       width: "650px",
       orientation: 'portrait',
       type: "pdf",
