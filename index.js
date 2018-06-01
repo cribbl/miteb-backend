@@ -21,8 +21,8 @@ admin.initializeApp({
 const ref = admin.database();
 
 AWS.config.update({
-    accessKeyId: "AKIAIY33FTVXMWKDA2SA",
-    secretAccessKey: "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",
+    accessKeyId: "AKIAIWXHQYTV6HV7KMKA",
+    secretAccessKey: "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",
 });
 
 const s3 = new AWS.S3();
@@ -210,6 +210,7 @@ app.get('/upload', function(req, res) {
         }
         else {
           console.log("uploaded succcessfully")
+          console.log(`downloadURL : https://s3.amazonaws.com/${bucketName}/sample.pdf`);
           res.status(200).send(data)
         }
       })
