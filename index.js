@@ -4,6 +4,8 @@ const moment = require('moment');
 const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer')
+const AWS = require('aws-sdk')
+const fs = require('fs')
 var cors = require('cors')
 const base_url = "dev-miteventbooking.herokuapp.com";
 
@@ -17,6 +19,14 @@ admin.initializeApp({
 });
 
 const ref = admin.database();
+
+AWS.config.update({
+    accessKeyId: "AKIAIY33FTVXMWKDA2SA",
+    secretAccessKey: "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",
+});
+
+const s3 = new AWS.S3();
+const bucketName = 'miteb'
 
 app = express();
 app.use(cors())
@@ -36,7 +46,6 @@ const so_uid = "raMsWfP6m9dlNl6T6k7jTnfGlxG3";
 app.get('/', function(req, res, next) {
       res.status(200).send("Hello World!");
 });
-
 
 function datesBetween(start_date, end_date) {
       var start_date = moment(start_date);
@@ -183,6 +192,30 @@ app.get('/update-user', function(req, res) {
       res.status(302).send("Error updating user:", error);
     });
 })
+
+
+app.get('/upload', function(req, res) {
+  fs.readFile('./sample.pdf', function(err, data) {
+    if(err) {
+      console.log(err)
+      res.status(200).send(err)
+    }
+    else {
+      console.log(data)
+      let params = {Bucket: bucketName, Key: "sample.pdf", Body: data}
+      s3.putObject(params, function(err, data) {
+        if(err) {
+          console.log("error")
+          res.status(200).send(err)
+        }
+        else {
+          console.log("uploaded succcessfully")
+          res.status(200).send(data)
+        }
+      })
+    }
+  })
+});
 
 app.get('/fetch_rooms/', function(req, res) {
       var start_date = String(req.query.start_date);
