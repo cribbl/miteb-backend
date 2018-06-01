@@ -9,7 +9,7 @@
     "logs": "firebase functions:log"
   },
   "dependencies": {
-    "@google-cloud/storage": "^1.6.0",
+    "aws-sdk": "^2.249.1",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "ejs": "^2.6.1",
@@ -17,9 +17,9 @@
     "firebase": "^4.11.0",
     "firebase-admin": "~5.8.1",
     "firebase-functions": "^1.0.2",
-    "google-cloud": "^0.57.0",
     "html-pdf": "^2.2.0",
     "i": "^0.3.6",
+    "fs": "0.0.1-security",
     "moment": "^2.21.0",
     "nodemailer": "^4.6.4"
   },

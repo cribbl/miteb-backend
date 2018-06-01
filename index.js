@@ -4,6 +4,8 @@ const moment = require('moment');
 const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer')
+const AWS = require('aws-sdk')
+const fs = require('fs')
 var cors = require('cors')
 var fs = require('fs');
 var pdf = require('html-pdf');
@@ -23,6 +25,14 @@ const ref = admin.database().ref('rooms');
 const AD_NAME = "Naranaya Shenoy"
 const SO_NAME = "Ashok Rao"
 const ref = admin.database();
+
+AWS.config.update({
+    accessKeyId: "***REMOVED***",
+    secretAccessKey: "***REMOVED***",
+});
+
+const s3 = new AWS.S3();
+const bucketName = 'miteb'
 
 app = express();
 app.use(cors())
@@ -125,6 +135,30 @@ app.get('/update-user', function(req, res) {
       res.status(302).send("Error updating user:", error);
     });
 })
+
+app.get('/upload', function(req, res) {
+  fs.readFile('./sample.pdf', function(err, data) {
+    if(err) {
+      console.log(err)
+      res.status(200).send(err)
+    }
+    else {
+      console.log(data)
+      let params = {Bucket: bucketName, Key: "sample.pdf", Body: data}
+      s3.putObject(params, function(err, data) {
+        if(err) {
+          console.log("error")
+          res.status(200).send(err)
+        }
+        else {
+          console.log("uploaded succcessfully")
+          console.log(`downloadURL : https://s3.amazonaws.com/${bucketName}/sample.pdf`);
+          res.status(200).send(data)
+        }
+      })
+    }
+  })
+});
 
 app.get('/send-otp', function(req,res) {
   var userID = req.query.userID;
