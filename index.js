@@ -7,7 +7,6 @@ const nodemailer = require('nodemailer')
 const AWS = require('aws-sdk')
 const fs = require('fs')
 var cors = require('cors')
-var fs = require('fs');
 var pdf = require('html-pdf');
 var ejs = require('ejs');
 const base_url = "dev-miteventbooking.herokuapp.com";
@@ -21,7 +20,6 @@ admin.initializeApp({
   databaseURL: "https://mit-clubs-management.firebaseio.com"
 });
 
-const ref = admin.database().ref('rooms');
 const AD_NAME = "Naranaya Shenoy"
 const SO_NAME = "Ashok Rao"
 const ref = admin.database();
@@ -136,29 +134,30 @@ app.get('/update-user', function(req, res) {
     });
 })
 
-app.get('/upload', function(req, res) {
-  fs.readFile('./sample.pdf', function(err, data) {
+var uploadToS3 = function(filename, callback) {
+  fs.readFile(filename, function(err, data) {
     if(err) {
-      console.log(err)
-      res.status(200).send(err)
+      console.log("error while reading", err)
+      callback(err)
     }
     else {
-      console.log(data)
-      let params = {Bucket: bucketName, Key: "sample.pdf", Body: data}
+      let params = {Bucket: bucketName, Key: filename, Body: data}
       s3.putObject(params, function(err, data) {
         if(err) {
-          console.log("error")
-          res.status(200).send(err)
+          console.log("error" + err)
+          callback(err)
+          return
         }
         else {
           console.log("uploaded succcessfully")
-          console.log(`downloadURL : https://s3.amazonaws.com/${bucketName}/sample.pdf`);
-          res.status(200).send(data)
+          downloadURL = `https://s3.amazonaws.com/${bucketName}/${filename}`;
+          callback(null, downloadURL)
+          return
         }
       })
     }
   })
-});
+}
 
 app.get('/send-otp', function(req,res) {
   var userID = req.query.userID;
@@ -193,12 +192,13 @@ app.get('/send-otp', function(req,res) {
   });
 });
 
-app.get('/pdf-receipt', function(req,res){
-  // var eventid = req.query.eventID;
+app.get('/generate-pdf', function(req,res){
+  var eventID = req.query.eventID;
+  var filename = `${eventID}.pdf`
 
-  var eventid = "-LD8H1FvjaD6m-qHdr_P";
+  // var eventid = "-LD8H1FvjaD6m-qHdr_P";
   // var eventid = "-LDIKlEC2c-EkzhX_RpK";
-  var eventref = admin.database().ref('events/' + eventid);
+  var eventref = admin.database().ref('events/' + eventID);
   eventref.on("value", function(snapshot) {
     var html;
     // Room selecting logic
@@ -250,20 +250,40 @@ app.get('/pdf-receipt', function(req,res){
       }
   });
     var options = {
-      filename: 'event-receipt.pdf',
+      filename: filename,
       height: "870px",
       width: "650px",
       orientation: 'portrait',
       type: "pdf",
-      border: "10"
+      timeout: '30000',
+      border: "10",
     };
 
   pdf.create(html, options).toFile(function(err, result) {
-      if (err) return console.log(err);
-           // console.log(res);
-           res.status(200).send(eventid);
-      });
-  }, function (error) {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      uploadToS3(filename, (err, downloadURL) => {
+        if(err) {
+          res.status(200).send(err)
+          return
+        }
+        else {
+          admin.database().ref('events').child(eventID + '/receiptURL').set(downloadURL)
+          res.status(200).send(downloadURL)
+          fs.unlink(filename, (err) => {
+            if (err) throw err;
+            console.log(filename +' was deleted');
+          });
+          return
+        }
+
+      })
+    }
+  });
+  },
+  function (error) {
      console.log("Error: " + error.code);
 });
   
