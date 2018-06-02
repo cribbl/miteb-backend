@@ -41,6 +41,9 @@ app.set('views', __dirname)
 const ad_uid = "DAAhD2EBqvQujYGITPAdBfZtZEH3";
 const so_uid = "raMsWfP6m9dlNl6T6k7jTnfGlxG3";
 
+var wiki = require('./wiki.js');
+app.use('/wiki', wiki);
+
 app.get('/', function(req, res, next) {
       res.status(200).send("Hello World!");
 });
