@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'helvetica';
+  height: 842px;
+  width:  595px;
+  position: relative;
+}
+
+.left {
+  float: left;
+  background-color: ;
+}
+
+.right {
+  background-color: ;
+  float: right;
+}
+
+.header {
+  align-items: center;
+  
+  height: 100px;
+
+  padding: 10px;
+  margin: 0;
+}
+
+.header img {
+  max-width: 30%;
+  height: 100px;
+}
+
+.label {
+  background-color: black;
+  color: white;
+  height: 20px;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-left: 8px;
+}
+
+.label h5 {
+  margin: 0;
+}
+
+.signatures {
+  width: 100%;
+}
+
+.signatures p {
+  margin: 5px;
+}
+
+.signatures img {
+  max-width: 80%;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+th {
+    text-align: left;
+}
+</style>
+</head>
+<body>
+  <center>
+    <div class="header">
+        <img class="left" src="https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/Fq10VDgTdAf7t4o4sEUrgY08rGg2%2FprofilePic?alt=media&token=4545a6cc-524e-4e24-9c75-7b022ba6ccd2">
+
+        <img class="right" style="max-width: 300px;" src="http://smartstudents.co.in/org_images/115/smartstudents-mit-manipal.png">
+    </div>
+    
+    <div class="label">
+      <h5 class="left">Event Booking</h5>
+      <h5 class="right"><%= club_name %></h5>
+    </div>
+
+    <div>
+      <table style="width:100%; margin: 20px">
+      <caption style="text-align: left; font-weight: 700">Booker Details</caption>
+        <tr>
+          <td style="width: 30%">Name</td>
+          <td><%= booker_name %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">Reg No</td>
+          <td><%= booker_reg_no %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">Contact</td>
+          <td><%= booker_contact %></td>
+        </tr>
+      </table>
+
+      <table style="width:100%; margin: 20px">
+      <caption style="text-align: left; font-weight: 700">Event Details</caption>
+        <tr>
+          <td style="width: 30%">Title</td>
+          <td><%= title %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">Type</td>
+          <td><%= type %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">Start Date</td>
+          <td><%= start_date %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">End Date</td>
+          <td><%= end_date %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">Rooms</td>
+          <td><%= room_list %></td>
+        </tr>
+        <tr style="visibility: <%= isVisible %>;">
+          <td style="width: 30%">Notes</td>
+          <td><%= Notes %></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="signatures" style="display: inline-block;">
+      <div class="left" style="width: 28%; padding-left: 10px">
+        <img src="https://test.materialcoder.com/project/home/images/signature-scan.png">
+        <p><%= fa_name %></p>
+        <p>Faculty Advisor</p>
+        <p><%= fa_date %></p>
+      </div>
+      <div style="width: 28%; background-color: ; display: inline-block; padding-left: 10px;">
+        <img src="https://test.materialcoder.com/project/home/images/signature-scan.png">
+        <p><%= ad_name %></p>
+        <p>Associate Director</p>
+        <p><%= ad_date %></p>
+      </div>
+      <div class="right" style="width: 28%; padding-left: 10px;">
+        <img src="https://test.materialcoder.com/project/home/images/signature-scan.png">
+        <p><%= so_name %></p>
+        <p>Security Officer</p>
+        <p><%= so_date %></p>
+      </div>
+    </div>
+
+  </center>
+</body>
+</html>
