@@ -91,7 +91,7 @@ app.post('/send-email', function(req, res) {
     }
   });
   var mailOptions = {
-    from: params.senderEmail, // sender address (who sends)
+    from: '***REMOVED***', // sender address (who sends)
     to: params.to, // list of receivers (who receives)
     subject: params.subject, // Subject line
     text: params.text, // plaintext body
