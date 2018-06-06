@@ -38,6 +38,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('views'));
 app.set('views', __dirname)
 
+const sc_uid = "9xdTvUjqtuYI5yYOJ4BbhsPAIyx2";
 const ad_uid = "DAAhD2EBqvQujYGITPAdBfZtZEH3";
 const so_uid = "raMsWfP6m9dlNl6T6k7jTnfGlxG3";
 
@@ -52,10 +53,11 @@ app.post('/send-notif', function(req, res, next) {
   var notifOptions = req.body.notificationOptions;
   console.log(notifOptions)
   switch(req.body.uid) {
-          case "AD": uid = ad_uid; break;
-          case "SO": uid = so_uid; break;
-          default: uid = req.body.uid;
-        }
+    case "SC": uid = sc_uid; break;
+    case "AD": uid = ad_uid; break;
+    case "SO": uid = so_uid; break;
+    default: uid = req.body.uid;
+  }
 
   admin.database().ref('fcmTokens/' + uid).once('value', function(snapshot) {
     for(let token in snapshot.val()) {
