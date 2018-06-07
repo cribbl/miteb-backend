@@ -9,6 +9,7 @@ const fs = require('fs')
 var cors = require('cors')
 var pdf = require('html-pdf');
 var ejs = require('ejs');
+const smtpTransport = require('nodemailer-smtp-transport')
 
 var serviceAccount = require("./config.json");
 
@@ -81,15 +82,16 @@ app.post('/send-notif', function(req, res, next) {
 app.post('/send-email', function(req, res) {
   var params = req.body;
   console.log(params);
-  var transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // use SSL
+  var transporter = nodemailer.createTransport(smtpTransport({
+    // host: 'smtp.gmail.com',
+    // port: 465,
+    // secure: true, // use SSL
+    service: 'gmail',
     auth: {
         user: 'miteventbooking@gmail.com',
         pass: 'Password@1234'
     }
-  });
+  }));
   var mailOptions = {
     from: 'miteventbooking@gmail.com', // sender address (who sends)
     to: params.to, // list of receivers (who receives)
