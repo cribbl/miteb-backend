@@ -193,7 +193,7 @@ var uploadToS3 = function(filename, callback) {
   })
 }
 
-app.get('/generate-pdf', function(req,res){
+app.get('/generate-pdf', function(req,res) {
   var eventID = req.query.eventID;
   var filename = `${eventID}.pdf`
 
@@ -287,6 +287,32 @@ app.get('/generate-pdf', function(req,res){
 });
   
 });
+
+app.post('/signup', function(req, res) {
+  var newUser = req.body;
+  admin.auth().createUser({
+    uid: newUser.name.replace(/\s/g,''),
+    email: newUser.email,
+    password: newUser.password,
+  })
+  .then(function(user) {
+    newUser['uid'] = user.uid;
+    newUser['isApproved'] = false;
+    newUser['isClub'] = true,
+    newUser['isFA'] = false,
+    newUser['notificationSettings'] = {
+      email: 1,
+      sms: 0
+    }
+    admin.database().ref('clubs/').child(user.uid).set(newUser);
+    res.status(200).send({state: 'success', res: newUser});
+  })
+  .catch(function(err) {
+    console.log(err.errorInfo);
+    res.status(200).send({state: 'fail', err: err.errorInfo});
+  })
+
+})
 
 const api = functions.https.onRequest(app);
 
