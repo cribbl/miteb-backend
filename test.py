@@ -37,7 +37,7 @@ import urllib2
 
 
 params = urllib.urlencode(update_user_params)
-res = urllib2.urlopen("https://miteventbooking.herokuapp.com/login?username=admin&password=pass")
+res = urllib2.urlopen('http://localhost:9000/event/generate-pdf?eventID=-LFJQMGt9h9jYaer4C3H')
 print res.read()
 
 # import json
@@ -48,6 +48,6 @@ print res.read()
 
 # http = urllib3.PoolManager()
 
-# r = http.request('POST', 'https://miteventbooking.herokuapp.com/signu'p, body=encoded_body)
+# r = http.request('POST', 'http://localhost:9000/hello', body=encoded_body)
 
 # print r.read() #

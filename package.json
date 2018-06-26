@@ -2,11 +2,7 @@
   "name": "MITEventBooking",
   "description": "Backend for the MIT Event Booking Portal",
   "scripts": {
-    "serve": "firebase serve --only functions",
-    "shell": "firebase experimental:functions:shell",
-    "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "start": "nodemon app.js"
   },
   "dependencies": {
     "aws-sdk": "^2.249.1",
@@ -14,12 +10,9 @@
     "cors": "^2.8.4",
     "ejs": "^2.6.1",
     "express": "^4.16.2",
-    "firebase": "^4.11.0",
     "firebase-admin": "~5.8.1",
-    "firebase-functions": "^1.0.2",
     "fs": "0.0.1-security",
     "html-pdf": "^2.2.0",
-    "i": "^0.3.6",
     "moment": "^2.21.0",
     "nodemailer": "^4.6.4",
     "nodemailer-smtp-transport": "^2.7.4"
