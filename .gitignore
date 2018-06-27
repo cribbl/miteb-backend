@@ -19,4 +19,4 @@ yarn-debug.log*
 yarn-error.log*
 
 #excelfiles
-ask.xlsx
+/controllers/eventDetails.xlsx

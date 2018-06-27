@@ -114,21 +114,28 @@ exports.generate_pdf = function(req,res) {
 exports.generate_sheet = function(req, res) {
  try {
         var workbook = new Excel.Workbook();
-        var worksheet = workbook.addWorksheet('My Sheet');
+        var worksheet = workbook.addWorksheet('Event Details');
 
         worksheet.columns = [
-            { header: 'Id', key: 'id', width: 10 },
-            { header: 'Name', key: 'name', width: 32 },
-            { header: 'D.O.B.', key: 'DOB', width: 10 }
+        	{header: 'UID', key: 'uid', width: 10},
+            { header: 'Date', key: 'date', width: 30 },
+            { header: 'Club Name', key: 'club', width: 40 },
+            { header: 'Event Name', key: 'eventName', width: 40 }
         ];
-        worksheet.addRow({id: 1, name: 'John Doe', dob: new Date(1970,1,1)});
-        worksheet.addRow({id: 2, name: 'Jane Doe', dob: new Date(1965,1,7)});
+        worksheet.addRow({uid: 1, date: new Date(2018, 8, 10), club:'LDQ', eventName: 'GBM'});
+        worksheet.addRow({uid: 2, date: new Date(2018, 8, 11), club:'IEEE', eventName: 'Workshop'});
+        worksheet.addRow({uid: 3, date: new Date(2018, 8, 12), club:'IECSE', eventName: 'Interview'});
+        worksheet.addRow({uid: 4, date: new Date(2018, 8, 13), club:'LUG', eventName: 'Install Fest'});
 
-       // Make a file named ask.xlsx in the root directory of the projecet
-        workbook.xlsx.writeFile(__dirname + '/ask.xlsx').then(function() {
+        workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function() {
             console.log('file is written');
-            res.sendFile(__dirname + '/ask.xlsx', function(err){
-                console.log('---------- error downloading file: ' + err);
+            res.sendFile(__dirname + '/eventDetails.xlsx', function(err, result){
+                if(err){
+                	console.log('Error downloading file: ' + err);	
+                }
+                else{
+                	console.log('File downloaded successfully');
+                }
             });
         });
     } catch(err) {
