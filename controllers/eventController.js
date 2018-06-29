@@ -147,6 +147,7 @@ exports.generate_sheet = function(req, res) {
         clubRef.child('clubs/' + clubID + '/my_events').on("value", function(snapshot) {
         eventID = snapshotToArray(snapshot);
         
+        var counter = 0;
         //iterates through the clubID array and inserts data accordingly into the workbook
         eventID.forEach(function(element){
         clubRef.child('events/'+element).on("value", function(snapshot){
@@ -158,7 +159,7 @@ exports.generate_sheet = function(req, res) {
             var t2 = moment(d2, 'DD-MM-YYYY');
             var t3 = moment(sdate, 'DD-MM-YYYY');
             var t4 = moment(edate, 'DD-MM-YYYY');
-            
+            counter++;
 
             if(moment(t1).isBefore(t3) && moment(t2).isAfter(t4)){
             console.log(element);
@@ -166,22 +167,25 @@ exports.generate_sheet = function(req, res) {
             console.log(edate);
             console.log(club);
             console.log(desc);  
-            worksheet.addRow({sdate: sdate, edate: edate, club: club, eventName: desc});    
-          }
-        })
-      })
-        	//Writes the content on an excel sheet and downloads it
-     		workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function() {
+            worksheet.addRow({sdate: sdate, edate: edate, club: club, eventName: desc});
+            if(counter == eventID.length){
+                //Writes the content on an excel sheet and downloads it
+            workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function() {
             console.log('file is written');
             res.sendFile(__dirname + '/eventDetails.xlsx', function(err, result){
                 if(err){
-                	console.log('Error downloading file: ' + err);	
+                  console.log('Error downloading file: ' + err);  
                 }
                 else{
-                	console.log('File downloaded successfully');
+                  console.log('File downloaded successfully');
                 }
             });
         });
+            }
+
+          }
+        })
+      })
      });
         
     } catch(err) {
