@@ -152,13 +152,19 @@ exports.generate_sheet = function(req, res) {
             edate = snapshot.child('end_date').val();
             club = snapshot.child('clubName').val();
             desc = snapshot.child('desc').val();
+            var t1 = moment(d1, 'DD-MM-YYYY');
+            var t2 = moment(d2, 'DD-MM-YYYY');
+            var t3 = moment(sdate, 'DD-MM-YYYY');
+            var t4 = moment(edate, 'DD-MM-YYYY');
             
-            if(d1<sdate && d2>edate){
-              console.log(sdate);
-              console.log(edate);
-              console.log(club);
-              console.log(desc);
-              worksheet.addRow({sdate: sdate, edate: edate, club: club, eventName: desc});    
+
+            if(moment(t1).isBefore(t3) && moment(t2).isAfter(t4)){
+            console.log(element);
+            console.log(sdate);
+            console.log(edate);
+            console.log(club);
+            console.log(desc);  
+            worksheet.addRow({sdate: sdate, edate: edate, club: club, eventName: desc});    
           }
         })
       })
