@@ -110,7 +110,7 @@ exports.generate_pdf = function(req,res) {
 });
   
 };
-//ExcelJS testing
+
 exports.generate_sheet = function(req, res) {
  try {
       function snapshotToArray(snapshot) {
@@ -136,6 +136,7 @@ exports.generate_sheet = function(req, res) {
         var worksheet = workbook.addWorksheet('Event Details');
         var clubRef = admin.database().ref();
 
+        //defining header columns
         worksheet.columns = [
             { header: 'Start Date', key: 'sdate', width: 30 },
             { header: 'End Date', key: 'edate', width: 30 },
@@ -146,6 +147,7 @@ exports.generate_sheet = function(req, res) {
         clubRef.child('clubs/' + clubID + '/my_events').on("value", function(snapshot) {
         eventID = snapshotToArray(snapshot);
         
+        //iterates through the clubID array and inserts data accordingly into the workbook
         eventID.forEach(function(element){
         clubRef.child('events/'+element).on("value", function(snapshot){
             sdate = snapshot.child('start_date').val();
@@ -168,9 +170,8 @@ exports.generate_sheet = function(req, res) {
           }
         })
       })
-     });
-               
-        workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function() {
+        	//Writes the content on an excel sheet and downloads it
+     		workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function() {
             console.log('file is written');
             res.sendFile(__dirname + '/eventDetails.xlsx', function(err, result){
                 if(err){
@@ -181,6 +182,8 @@ exports.generate_sheet = function(req, res) {
                 }
             });
         });
+     });
+        
     } catch(err) {
         console.log('Error: ' + err);
     }  
