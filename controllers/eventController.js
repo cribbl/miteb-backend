@@ -113,32 +113,91 @@ exports.generate_pdf = function(req,res) {
 //ExcelJS testing
 exports.generate_sheet = function(req, res) {
  try {
+
+        function snapshotToArray(snapshot) {
+          var returnArr = [];
+
+          snapshot.forEach(function(childSnapshot) {
+              var item = childSnapshot.val();
+              item.key = childSnapshot.key;
+
+              returnArr.push(item);
+          });
+
+    return returnArr;
+};
+        var clubID = req.params.uid;
+        var d1 = req.params.date1;
+        var d2 = req.params.date2; 
+        var sdate;
+        var edate;
+        var club;
+        var desc;
+
         var workbook = new Excel.Workbook();
         var worksheet = workbook.addWorksheet('Event Details');
 
+        var clubRef = admin.database().ref();
+        // clubRef.on("value", function(snapshot) {
+        //  //  if(snapshot.key==clubID){
+        //     console.log(snapshot.key);
+        //  // }
+        // }, function (errorObject) {
+        // console.log("The read failed: " + errorObject.code);
+        // });
+        // // ref.on('value', gotData, errData);
+        // // function gotData(data){
+        // // 	console.log(data.val());
+        // // }
         worksheet.columns = [
-        	{header: 'UID', key: 'uid', width: 10},
-            { header: 'Date', key: 'date', width: 30 },
+            { header: 'Start Date', key: 'sdate', width: 30 },
+            { header: 'End Date', key: 'edate', width: 30 },
             { header: 'Club Name', key: 'club', width: 40 },
             { header: 'Event Name', key: 'eventName', width: 40 }
         ];
-        worksheet.addRow({uid: 1, date: new Date(2018, 8, 10), club:'LDQ', eventName: 'GBM'});
-        worksheet.addRow({uid: 2, date: new Date(2018, 8, 11), club:'IEEE', eventName: 'Workshop'});
-        worksheet.addRow({uid: 3, date: new Date(2018, 8, 12), club:'IECSE', eventName: 'Interview'});
-        worksheet.addRow({uid: 4, date: new Date(2018, 8, 13), club:'LUG', eventName: 'Install Fest'});
-
-        workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function() {
-            console.log('file is written');
-            res.sendFile(__dirname + '/eventDetails.xlsx', function(err, result){
-                if(err){
-                	console.log('Error downloading file: ' + err);	
-                }
-                else{
-                	console.log('File downloaded successfully');
-                }
-            });
+        var eventID;
+        clubRef.child('clubs/' + clubID + '/my_events').on("value", function(snapshot) {
+        eventID = snapshotToArray(snapshot);
+        // console.log(eventIDs[0]);
+        snapshot.forEach(function(data) {
+        // console.log(snapshot.val());
+          });
         });
+
+        // var eventID = '-LF343bvIcNAQMprq0eW';
+        for(var i = 0; i<eventID.length; i++){
+        clubRef.child('events/'+eventID[i]).on("value", function(snapshot){
+          // console.log(snapshot.child('clubName').val());
+          // snapshot.forEach(function(data){
+            // console.log(snapshot.child('desc').val());
+            // console.log(snapshot.val());
+            // console.log(snapshot.key);
+            sdate = snapshot.child('start_date').val();
+            edate = snapshot.child('end_date').val();
+            club = snapshot.child('clubName').val();
+            desc = snapshot.child('desc').val();
+            if(d1<sdate && d2>edate){
+              console.log(sdate);
+              console.log(edate);
+              console.log(club);
+              console.log(desc);
+              worksheet.addRow({sdate: sdate, edate: edate, club: club, eventName: desc});    
+          }// })
+        })
+      }
+        
+        // workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function() {
+        //     console.log('file is written');
+        //     res.sendFile(__dirname + '/eventDetails.xlsx', function(err, result){
+        //         if(err){
+        //         	console.log('Error downloading file: ' + err);	
+        //         }
+        //         else{
+        //         	console.log('File downloaded successfully');
+        //         }
+        //     });
+        // });
     } catch(err) {
-        console.log('OOOOOOO this is the error: ' + err);
+        console.log('Error: ' + err);
     }  
 };
