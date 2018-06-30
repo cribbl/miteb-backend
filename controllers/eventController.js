@@ -41,7 +41,7 @@ exports.generate_pdf = function(req,res) {
       notes = snapshot.val().notes;
       visibility = "visible";
     }
-    ejs.renderFile('eventpdf.ejs', {
+    ejs.renderFile(__dirname + '/eventpdf.ejs', {
       club_name: snapshot.val().clubName,
       booker_name: snapshot.val().booker_name,
       booker_contact: snapshot.val().booker_contact,
@@ -91,13 +91,13 @@ exports.generate_pdf = function(req,res) {
           return
         }
         else {
-          admin.database().ref('events').child(eventID + '/receiptURL').set(downloadURL)
-          res.status(200).send(downloadURL)
+          admin.database().ref('events').child(eventID + '/receiptURL').set(downloadURL);
           fs.unlink(filename, (err) => {
             if (err) throw err;
             console.log(filename +' was deleted from local server');
           });
-          return
+          res.status(200).send(downloadURL);
+          return;
         }
 
       })
