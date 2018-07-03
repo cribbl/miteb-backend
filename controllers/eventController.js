@@ -7,6 +7,7 @@ admin.initializeApp({
 
 var ejs = require('ejs');
 var pdf = require('html-pdf');
+var Excel = require('exceljs');
 const moment = require('moment');
 const fs = require('fs')
 
@@ -108,4 +109,86 @@ exports.generate_pdf = function(req,res) {
      console.log("Error: " + error.code);
 });
   
+};
+
+exports.generate_sheet = function(req, res) {
+ try {
+      function snapshotToArray(snapshot) {
+        var returnArr = [];
+
+         snapshot.forEach(function(childSnapshot) {
+            var item = childSnapshot.val();
+            item.key = childSnapshot.key;
+
+            returnArr.push(item);
+          });
+
+    return returnArr;
+    };
+        var clubID = req.params.uid;
+        var d1 = req.params.date1;
+        var d2 = req.params.date2; 
+        var sdate;
+        var edate;
+        var club;
+        var desc;
+        var workbook = new Excel.Workbook();
+        var worksheet = workbook.addWorksheet('Event Details');
+        var clubRef = admin.database().ref();
+
+        //defining header columns
+        worksheet.columns = [
+            { header: 'Start Date', key: 'sdate', width: 30 },
+            { header: 'End Date', key: 'edate', width: 30 },
+            { header: 'Club Name', key: 'club', width: 40 },
+            { header: 'Event Name', key: 'eventName', width: 40 }
+        ];
+        var eventID;
+        clubRef.child('clubs/' + clubID + '/my_events').on("value", function(snapshot) {
+        eventID = snapshotToArray(snapshot);
+        
+        var counter = 0;
+        //iterates through the clubID array and inserts data accordingly into the workbook
+        eventID.forEach(function(element){
+        clubRef.child('events/'+element).on("value", function(snapshot){
+            sdate = snapshot.child('start_date').val();
+            edate = snapshot.child('end_date').val();
+            club = snapshot.child('clubName').val();
+            desc = snapshot.child('desc').val();
+            var t1 = moment(d1, 'DD-MM-YYYY');
+            var t2 = moment(d2, 'DD-MM-YYYY');
+            var t3 = moment(sdate, 'DD-MM-YYYY');
+            var t4 = moment(edate, 'DD-MM-YYYY');
+            counter++;
+
+            if(moment(t1).isBefore(t3) && moment(t2).isAfter(t4)){
+            console.log(element);
+            console.log(sdate);
+            console.log(edate);
+            console.log(club);
+            console.log(desc);  
+            worksheet.addRow({sdate: sdate, edate: edate, club: club, eventName: desc});
+            if(counter == eventID.length){
+                //Writes the content on an excel sheet and downloads it
+            workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function() {
+            console.log('file is written');
+            res.sendFile(__dirname + '/eventDetails.xlsx', function(err, result){
+                if(err){
+                  console.log('Error downloading file: ' + err);  
+                }
+                else{
+                  console.log('File downloaded successfully');
+                }
+            });
+        });
+            }
+
+          }
+        })
+      })
+     });
+        
+    } catch(err) {
+        console.log('Error: ' + err);
+    }  
 };

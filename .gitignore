@@ -17,3 +17,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+#excelfiles
+/controllers/eventDetails.xlsx
+/controllers/.~lock.eventDetails.xlsx#
