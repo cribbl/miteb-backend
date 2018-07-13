@@ -9,6 +9,7 @@ var cors = require('cors')
 var pdf = require('html-pdf');
 var ejs = require('ejs');
 const smtpTransport = require('nodemailer-smtp-transport')
+var EmailTemplate = require('email-templates').EmailTemplate;
 
 const sc_uid = "9xdTvUjqtuYI5yYOJ4BbhsPAIyx2";
 const ad_uid = "DAAhD2EBqvQujYGITPAdBfZtZEH3";
@@ -49,9 +50,35 @@ exports.send_otp = function(req,res) {
 };
 
 
-exports.send_email = function(req, res) {
-  var params = req.body;
-  console.log(params);
+// exports.send_email = function(req, res) {
+//   var params = req.body;
+//   console.log(params);
+//   var transporter = nodemailer.createTransport(smtpTransport({
+//     service: 'gmail',
+//     auth: {
+//         user: 'miteventbooking@gmail.com',
+//         pass: 'Password@1234'
+//     }
+//   }));
+//   var mailOptions = {
+//     from: 'miteventbooking@gmail.com', // sender address (who sends)
+//     to: params.to, // list of receivers (who receives)
+//     subject: params.subject, // Subject line
+//     text: params.text, // plaintext body
+//     html: params.html // html body
+//   };
+
+//   // send mail with defined transport object
+//   transporter.sendMail(mailOptions, function(error, info){
+//     if(error){
+//       return console.log(error);
+//       res.status(302).send(error);
+//     }
+//     console.log('Message sent: ' + info.response);
+//     res.status(200).send(info.response);
+//   });
+// };
+
   var transporter = nodemailer.createTransport(smtpTransport({
     service: 'gmail',
     auth: {
@@ -59,24 +86,34 @@ exports.send_email = function(req, res) {
         pass: 'Password@1234'
     }
   }));
-  var mailOptions = {
-    from: 'miteventbooking@gmail.com', // sender address (who sends)
-    to: params.to, // list of receivers (who receives)
-    subject: params.subject, // Subject line
-    text: params.text, // plaintext body
-    html: params.html // html body
-  };
 
-  // send mail with defined transport object
-  transporter.sendMail(mailOptions, function(error, info){
-    if(error){
-      return console.log(error);
-      res.status(302).send(error);
+exports.send_email = function(req, res) {
+  console.log(__dirname);
+  ejs.renderFile(__dirname + '/test.ejs', {
+    name: 'Bhawesh'
+  }, function(err, html) {
+    if(err) {
+      console.log(err);
+      return;
     }
-    console.log('Message sent: ' + info.response);
-    res.status(200).send(info.response);
-  });
-};
+    console.log('else')
+    
+    var mainOptions = {
+        from: 'miteventbooking@gmail.com',
+        to: 'bhansalibhawesh85@gmail.com',
+        subject: 'Hello, world',
+        html: html
+    };
+    transporter.sendMail(mainOptions, function (err, info) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('Message sent: ' + info.response);
+        }
+    });
+
+  })
+}
 
 exports.send_push = function(req, res) {
   var uid;
