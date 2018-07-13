@@ -9,6 +9,7 @@
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "ejs": "^2.6.1",
+    "email-templates": "^4.0.1",
     "express": "^4.16.2",
     "firebase-admin": "~5.8.1",
     "fs": "0.0.1-security",
