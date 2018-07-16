@@ -18,10 +18,12 @@ app.use(function(req, res, next) {
 var userRoutes = 	require('./routes/user')
 var eventRoutes = require('./routes/event')
 var notifRoutes = require('./routes/notif')
+var complaintsRoutes = require('./routes/complaints')
 
 app.use('/user', userRoutes);
 app.use('/event', eventRoutes);
 app.use('/notif', notifRoutes);
+app.use('/complaint', complaintsRoutes);
 
 
 app.listen(process.env.PORT || 9000, function(){
