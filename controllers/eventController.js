@@ -5,7 +5,6 @@ var pdf = require('html-pdf');
 var Excel = require('exceljs');
 const moment = require('moment');
 const fs = require('fs');
-const XLSX = require('xlsx');
 
 const AD_NAME = "Naranaya Shenoy"
 const SO_NAME = "Ashok Rao"
