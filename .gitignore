@@ -1,5 +1,8 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
+# exports
+*.xlsx
+*.pdf
 
 # dependencies
 /API/functions/node_modules
@@ -17,3 +20,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+#excelfiles
+/controllers/eventDetails.xlsx
+/controllers/.~lock.eventDetails.xlsx#
