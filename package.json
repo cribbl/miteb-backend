@@ -16,7 +16,7 @@
     "html-pdf": "^2.2.0",
     "moment": "^2.21.0",
     "nodemailer": "^4.6.4",
-    "nodemailer-smtp-transport": "^2.7.4",
+    "nodemailer-smtp-transport": "^2.7.4"
   },
   "private": true,
   "devDependencies": {
