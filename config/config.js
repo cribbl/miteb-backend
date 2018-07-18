@@ -5,6 +5,13 @@ AWS.config.update({
     secretAccessKey: "***REMOVED***",
 });
 
+const admin = require('firebase-admin');
+var serviceAccount = require("./../config.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://mit-clubs-management.firebaseio.com"
+});
+
 const s3 = new AWS.S3();
 const bucketName = 'miteb'
 
