@@ -9,11 +9,13 @@ var cors = require('cors')
 var pdf = require('html-pdf');
 var ejs = require('ejs');
 const smtpTransport = require('nodemailer-smtp-transport')
-var EmailTemplate = require('email-templates').EmailTemplate;
-
+// var EmailTemplate = require('email-templates').EmailTemplate;
 const sc_uid = "9xdTvUjqtuYI5yYOJ4BbhsPAIyx2";
 const ad_uid = "DAAhD2EBqvQujYGITPAdBfZtZEH3";
 const so_uid = "raMsWfP6m9dlNl6T6k7jTnfGlxG3";
+const img_approved = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fapproved.png?alt=media&token=d8cafb02-d31c-4afc-b940-f793f349e6c2";
+const img_flagged = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fflagged.png?alt=media&token=8f8ce92c-3f6a-472f-b323-e86adfdac338";
+const img_rejected = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Frejected.png?alt=media&token=cef33f96-768e-43b1-aaa5-bffc27f0fdaf";
 
 exports.send_otp = function(req,res) {
   // var userID = req.query.userID;
@@ -78,7 +80,7 @@ exports.send_otp = function(req,res) {
 //     res.status(200).send(info.response);
 //   });
 // };
-
+var img_link;
   var transporter = nodemailer.createTransport(smtpTransport({
     service: 'gmail',
     auth: {
@@ -86,11 +88,62 @@ exports.send_otp = function(req,res) {
         pass: '***REMOVED***'
     }
   }));
-
 exports.send_email = function(req, res) {
   console.log(__dirname);
-  ejs.renderFile(__dirname + '/test.ejs', {
-    name: 'Bhawesh'
+  var mode = req.query.mode;
+  var club_name = req.query.club_name;
+  var event_name = req.query.event_name;
+  var club_mail = req.query.club_mail;
+  var receipt_url;
+  var file;
+  var image_status;
+  var authority;
+  var message;
+  if(mode == 'Approved') {
+    file = 'approved.ejs';
+    image_status = img_approved;
+    receipt_url = req.query.receipt_url;
+    // receipt_url = 'https://s3.amazonaws.com/miteb/-LD8H1FvjaD6m-qHdr_P.pdf'
+  }
+  else if(mode == 'Rejected') {
+    file = 'rejected.ejs';
+    image_status = img_rejected;
+    authority = req.query.authority;
+    switch(authority) {
+      case 'FA':
+        // message = FA_msg;
+        message = 'some random message FA';
+      case 'AD':
+        // message = AD_msg;
+        message = 'some random message AD';
+      case 'SO':
+        // message = SO_msg;
+        message = 'some random message SO';
+    }
+  }
+  else if(mode == 'Flagged') {
+    file = 'flagged.ejs';
+    image_status = img_flagged;
+    authority = req.query.authority;
+    switch(authority) {
+      case 'FA':
+        // message = FA_msg;
+        message = 'some random message FA';
+      case 'AD':
+        // message = AD_msg;
+        message = 'some random message AD';
+      case 'SO':
+        // message = SO_msg;
+        message = 'some random message SO';
+    }
+  }
+  ejs.renderFile(__dirname + '/../emailTemplates/' + file, {
+    club_name: club_name,
+    event_name: event_name,
+    receipt_link: receipt_url,
+    img_status: image_status,
+    authority: authority,
+    message: message
   }, function(err, html) {
     if(err) {
       console.log(err);
@@ -100,7 +153,8 @@ exports.send_email = function(req, res) {
     
     var mainOptions = {
         from: '***REMOVED***',
-        to: 'bhansalibhawesh85@gmail.com',
+        // to: club_mail
+        to: 'priyamagrawal2208@gmail.com',
         subject: 'Hello, world',
         html: html
     };
