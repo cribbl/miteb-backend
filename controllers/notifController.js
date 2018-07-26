@@ -129,12 +129,15 @@ exports.send_email = function(req, res) {
       case 'FA':
         // message = FA_msg;
         message = 'some random message FA';
+        break;
       case 'AD':
         // message = AD_msg;
         message = 'some random message AD';
+        break;
       case 'SO':
         // message = SO_msg;
         message = 'some random message SO';
+        break;
     }
   }
   ejs.renderFile(__dirname + '/../emailTemplates/' + file, {
