@@ -7,12 +7,17 @@ app = express();
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
+app.set('view engine', 'ejs');
+app.use(express.static(__dirname + '/public'));
 app.use(function(req, res, next) {
 	// if((req.headers.authorization == 'secret')) {
 	// 	return res.status(403).send({error: 'Unauthorised'});
 	// }
 	next();
+})
+
+app.get('/', function(req, res) {
+	res.render('test')
 })
 
 var userRoutes = 	require('./routes/user')
