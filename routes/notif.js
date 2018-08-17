@@ -11,6 +11,8 @@ router.get('/send-email-template', notif_controller.sendEventBookingStatusEmailT
 
 router.get('/send-complaint-email', notif_controller.sendComplaintEmailTemplate);
 
+router.get('/send-clubApproval-email', notif_controller.sendClubApprovalStatusEmailTemplate)
+
 router.post('/send-push', notif_controller.send_push);
 
 module.exports = router;
