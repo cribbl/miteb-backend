@@ -89,10 +89,11 @@ var img_link;
     }
   }));
 
-exports.send_email = function(req, res) {
+exports.sendEventBookingStatusEmailTemplate = function(req, res) {
   console.log(req.query);
   var authority = req.query.authority;
   var mode = req.query.mode;
+  var message = req.query.message;
   var club_name = req.query.club_name;
   var club_email = req.query.club_email;
   var booker_name = req.query.booker_name;
@@ -101,42 +102,36 @@ exports.send_email = function(req, res) {
   var receipt_url = req.query.receipt_url;
   var file;
   var image_status;
-  var message;
+  var subject;
   if(mode == 'APPROVED') {
     file = 'approved.ejs';
     image_status = img_approved;
+    subject = 'event approved';
   }
   else if(mode == 'REJECTED') {
     file = 'rejected.ejs';
     image_status = img_rejected;
+    subject = 'event rejected';
     switch(authority) {
       case 'FA':
-        // message = FA_msg;
-        message = 'some random message FA';
+        authority = 'Faculty Advisor';
       case 'AD':
-        // message = AD_msg;
-        message = 'some random message AD';
+        authority = 'Assistant Director';
       case 'SO':
-        // message = SO_msg;
-        message = 'some random message SO';
+        authority = 'Security Officer';
     }
   }
   else if(mode == 'FLAGGED') {
     file = 'flagged.ejs';
     image_status = img_flagged;
+    subject = 'event flagged';
     switch(authority) {
       case 'FA':
-        // message = FA_msg;
-        message = 'some random message FA';
-        break;
+        authority = 'Faculty Advisor';
       case 'AD':
-        // message = AD_msg;
-        message = 'some random message AD';
-        break;
+        authority = 'Assistant Director';
       case 'SO':
-        // message = SO_msg;
-        message = 'some random message SO';
-        break;
+        authority = 'Security Officer';
     }
   }
   ejs.renderFile(__dirname + '/../emailTemplates/' + file, {
@@ -155,9 +150,39 @@ exports.send_email = function(req, res) {
     
     var mainOptions = {
         from: 'miteventbooking@gmail.com',
-        // to: club_email
-        to: 'priyamagrawal2208@gmail.com',
-        subject: 'Hello, world',
+        to: [club_email,booker_email,'priyamagrawal2208@gmail.com','arushi_nigam@hotmail.com'],
+        subject: subject,
+        html: html
+    };
+    transporter.sendMail(mainOptions, function (err, info) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('Message sent: ' + info.response);
+        }
+    });
+
+  })
+}
+
+exports.sendComplaintEmailTemplate = function(req,res) {
+  var booker_name = req.query.name;
+  var booker_mail = req.query.mail;
+  var complaint_subject = req.query.subject;
+  ejs.renderFile(__dirname + '/../emailTemplates/complaint.ejs', {
+    booker_name: booker_name,
+    complaint_subject: complaint_subject
+  }, function(err, html) {
+    if(err) {
+      console.log(err);
+      return;
+    }
+    console.log('else')
+    
+    var mainOptions = {
+        from: 'miteventbooking@gmail.com',
+        to: [booker_mail,'priyamagrawal2208@gmail.com'],
+        subject: 'Complaint Lodging Successful',
         html: html
     };
     transporter.sendMail(mainOptions, function (err, info) {
