@@ -88,27 +88,27 @@ var img_link;
         pass: '***REMOVED***'
     }
   }));
+
 exports.send_email = function(req, res) {
-  console.log(__dirname);
+  console.log(req.query);
+  var authority = req.query.authority;
   var mode = req.query.mode;
   var club_name = req.query.club_name;
+  var club_email = req.query.club_email;
+  var booker_name = req.query.booker_name;
+  var booker_email = req.query.booker_email;
   var event_name = req.query.event_name;
-  var club_mail = req.query.club_mail;
-  var receipt_url;
+  var receipt_url = req.query.receipt_url;
   var file;
   var image_status;
-  var authority;
   var message;
-  if(mode == 'Approved') {
+  if(mode == 'APPROVED') {
     file = 'approved.ejs';
     image_status = img_approved;
-    receipt_url = req.query.receipt_url;
-    // receipt_url = 'https://s3.amazonaws.com/miteb/-LD8H1FvjaD6m-qHdr_P.pdf'
   }
-  else if(mode == 'Rejected') {
+  else if(mode == 'REJECTED') {
     file = 'rejected.ejs';
     image_status = img_rejected;
-    authority = req.query.authority;
     switch(authority) {
       case 'FA':
         // message = FA_msg;
@@ -121,10 +121,9 @@ exports.send_email = function(req, res) {
         message = 'some random message SO';
     }
   }
-  else if(mode == 'Flagged') {
+  else if(mode == 'FLAGGED') {
     file = 'flagged.ejs';
     image_status = img_flagged;
-    authority = req.query.authority;
     switch(authority) {
       case 'FA':
         // message = FA_msg;
@@ -156,7 +155,7 @@ exports.send_email = function(req, res) {
     
     var mainOptions = {
         from: '***REMOVED***',
-        // to: club_mail
+        // to: club_email
         to: 'priyamagrawal2208@gmail.com',
         subject: 'Hello, world',
         html: html
