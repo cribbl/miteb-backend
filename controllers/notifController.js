@@ -150,7 +150,7 @@ exports.sendEventBookingStatusEmailTemplate = function(req, res) {
     
     var mainOptions = {
         from: '***REMOVED***',
-        to: [club_email,booker_email,'priyamagrawal2208@gmail.com','arushi_nigam@hotmail.com'],
+        to: [club_email,'bhansalibhawesh@yahoo.com','priyamagrawal2208@gmail.com'],
         subject: subject,
         html: html
     };
@@ -166,8 +166,8 @@ exports.sendEventBookingStatusEmailTemplate = function(req, res) {
 }
 
 exports.sendComplaintEmailTemplate = function(req,res) {
-  var booker_name = req.query.name;
-  var booker_mail = req.query.mail;
+  var booker_name = req.query.booker_name;
+  var booker_email = req.query.booker_email;
   var complaint_subject = req.query.subject;
   ejs.renderFile(__dirname + '/../emailTemplates/complaint.ejs', {
     booker_name: booker_name,
@@ -181,7 +181,7 @@ exports.sendComplaintEmailTemplate = function(req,res) {
     
     var mainOptions = {
         from: '***REMOVED***',
-        to: [booker_mail,'priyamagrawal2208@gmail.com'],
+        to: [booker_email,'priyamagrawal2208@gmail.com'],
         subject: 'Complaint Lodging Successful',
         html: html
     };
@@ -194,6 +194,36 @@ exports.sendComplaintEmailTemplate = function(req,res) {
     });
 
   })
+}
+
+exports.sendClubApprovalStatusEmailTemplate = function(req, res) {
+  var club_name = req.query.club_name;
+  var club_email = req.query.club_email;
+  ejs.renderFile(__dirname + '/../emailTemplates/club_approved.ejs', {
+    club_name: club_name,
+    club_email: club_email
+  }, function(err, html) {
+    if(err) {
+      console.log(err);
+      return;
+    }
+    console.log('else')
+    
+    var mainOptions = {
+        from: '***REMOVED***',
+        to: [club_email,'priyamagrawal2208@gmail.com'],
+        subject: 'Club approved',
+        html: html
+    };
+    transporter.sendMail(mainOptions, function (err, info) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('Message sent: ' + info.response);
+        }
+    });
+
+  }) 
 }
 
 exports.send_push = function(req, res) {
