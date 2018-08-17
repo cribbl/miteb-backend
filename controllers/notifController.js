@@ -52,34 +52,34 @@ exports.send_otp = function(req,res) {
 };
 
 
-// exports.send_email = function(req, res) {
-//   var params = req.body;
-//   console.log(params);
-//   var transporter = nodemailer.createTransport(smtpTransport({
-//     service: 'gmail',
-//     auth: {
-//         user: 'miteventbooking@gmail.com',
-//         pass: 'Password@1234'
-//     }
-//   }));
-//   var mailOptions = {
-//     from: 'miteventbooking@gmail.com', // sender address (who sends)
-//     to: params.to, // list of receivers (who receives)
-//     subject: params.subject, // Subject line
-//     text: params.text, // plaintext body
-//     html: params.html // html body
-//   };
+exports.send_email = function(req, res) {
+  var params = req.body;
+  console.log(params);
+  var transporter = nodemailer.createTransport(smtpTransport({
+    service: 'gmail',
+    auth: {
+        user: 'miteventbooking@gmail.com',
+        pass: 'Password@1234'
+    }
+  }));
+  var mailOptions = {
+    from: 'miteventbooking@gmail.com', // sender address (who sends)
+    to: params.to, // list of receivers (who receives)
+    subject: params.subject, // Subject line
+    text: params.text, // plaintext body
+    html: params.html // html body
+  };
 
-//   // send mail with defined transport object
-//   transporter.sendMail(mailOptions, function(error, info){
-//     if(error){
-//       return console.log(error);
-//       res.status(302).send(error);
-//     }
-//     console.log('Message sent: ' + info.response);
-//     res.status(200).send(info.response);
-//   });
-// };
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+      return console.log(error);
+      res.status(302).send(error);
+    }
+    console.log('Message sent: ' + info.response);
+    res.status(200).send(info.response);
+  });
+};
 var img_link;
   var transporter = nodemailer.createTransport(smtpTransport({
     service: 'gmail',
@@ -150,7 +150,7 @@ exports.sendEventBookingStatusEmailTemplate = function(req, res) {
     
     var mainOptions = {
         from: 'miteventbooking@gmail.com',
-        to: [club_email,'bhansalibhawesh@yahoo.com','priyamagrawal2208@gmail.com'],
+        to: [club_email, booker_email],
         subject: subject,
         html: html
     };
@@ -177,7 +177,7 @@ exports.sendComplaintEmailTemplate = function(req,res) {
       console.log(err);
       return;
     }
-    console.log('else')
+    console.log('herh ehrherher')
     
     var mainOptions = {
         from: 'miteventbooking@gmail.com',
