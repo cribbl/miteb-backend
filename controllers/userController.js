@@ -8,7 +8,7 @@ function generateUID(abbrv) {
   return uid;
 }
 
-exports.signup = function(req, res) {
+exports.signup_club = function(req, res) {
   var newUser = req.body;
   admin.auth().createUser({
     uid: generateUID(newUser.abbrv),
@@ -16,6 +16,7 @@ exports.signup = function(req, res) {
     password: newUser.password,
   })
   .then(function(user) {
+    newUser['password'] = null,
     newUser['uid'] = user.uid;
     newUser['isApproved'] = false;
     newUser['isClub'] = true,
@@ -25,15 +26,62 @@ exports.signup = function(req, res) {
       sms: 0
     }
     newUser['fa'] = {
-      name: "DEFAULT"
+      name: "NOT CONNECTED YET"
     }
-    admin.database().ref('clubs/').child(user.uid).set(newUser);
-    res.status(200).send({state: 'success', res: newUser});
+    admin.database().ref('users/').child(user.uid).set(newUser);
+    res.status(200).send({state: 'success', newUser: newUser});
   })
   .catch(function(err) {
     console.log(err.errorInfo);
     res.status(200).send({state: 'fail', err: err.errorInfo});
   })
+};
+
+exports.signup_fa = function(req, res) {
+  var newUser = req.body;
+  var clubs = admin.database().ref('users/' + newUser.clubID);
+  var club;
+  clubs.once("value", function(snapshot) {
+    club = snapshot.val();
+
+    if(club == null) {
+      var err = {
+        code: 'auth/club-id-not-found',
+        message: "Club ID was not found!"
+      }
+      res.status(200).send({state: 'fail', err: err});
+      return;
+    }
+
+    else {
+      admin.auth().createUser({
+        uid: newUser.clubID + "FA",
+        email: newUser.email,
+        password: newUser.password,
+      })
+      .then(function(user) {
+        newUser['password'] = null;
+        newUser['nameAbbrv'] = "FA";
+        newUser['uid'] = user.uid;
+        newUser['clubID'] = newUser.clubID;
+        newUser['isApproved'] = true;
+        newUser['isFA'] = true;
+        newUser['notificationSettings'] = {
+          email: 1,
+          sms: 0
+        }
+        console.log(newUser);
+        admin.database().ref('users/').child(user.uid).set(newUser);
+        admin.database().ref('users/').child(newUser.clubID + '/fa/name').set(newUser.name);
+        admin.database().ref('users/').child(newUser.clubID + '/fa_uid').set(newUser.uid);
+        res.status(200).send({state: 'success', newUser: newUser});
+      })
+      .catch(function(err) {
+        console.log(err.errorInfo);
+        res.status(200).send({state: 'fail', err: err.errorInfo});
+      })
+    }
+  });
 };
 
 exports.update_user = function(req, res) {

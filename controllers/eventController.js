@@ -146,7 +146,7 @@ exports.generate_sheet = function(req, res) {
               { header: 'Booked By', key: 'booker_name', width: 25 }
           ];
           var eventID;
-          clubRef.child('clubs/' + clubID + '/my_events').once("value", function(snapshot) {
+          clubRef.child('users/' + clubID + '/my_events').once("value", function(snapshot) {
           eventID = snapshotToArray(snapshot);
           var eventCount = eventID.length;
           var i = 0;
@@ -200,7 +200,7 @@ exports.generate_sheet = function(req, res) {
         {
           console.log('extract monthly');
           var eventID;
-          clubRef.child('clubs/' + clubID + '/my_events').once("value", function(snapshot) {
+          clubRef.child('users/' + clubID + '/my_events').once("value", function(snapshot) {
             eventID = snapshotToArray(snapshot);
             var eventCount = eventID.length;
             var i = 0;
