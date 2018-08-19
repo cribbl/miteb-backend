@@ -6,10 +6,10 @@ AWS.config.update({
 });
 
 const admin = require('firebase-admin');
-var serviceAccount = require("./../config.json");
+var serviceAccount = process.env.NODE_ENV == 'production' ? require("./../config.json") : require("./../config-development.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://mit-clubs-management.firebaseio.com"
+  databaseURL: process.env.NODE_ENV == 'production' ? "https://staging-mit-event-booking.firebaseio.com" : "https://mit-clubs-management.firebaseio.com"
 });
 
 const s3 = new AWS.S3();

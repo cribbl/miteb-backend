@@ -1,8 +1,17 @@
 const admin = require('firebase-admin');
+
+function generateUID(abbrv) {
+  var uid;
+  uid = abbrv.replace(/\s/g,'').toLowerCase().slice(0, 4);
+  uid = uid.concat(Math.random()*100000000);
+  uid = uid.substring(0, 7);
+  return uid;
+}
+
 exports.signup = function(req, res) {
   var newUser = req.body;
   admin.auth().createUser({
-    uid: newUser.name.replace(/\s/g,''),
+    uid: generateUID(newUser.abbrv),
     email: newUser.email,
     password: newUser.password,
   })
@@ -14,6 +23,9 @@ exports.signup = function(req, res) {
     newUser['notificationSettings'] = {
       email: 1,
       sms: 0
+    }
+    newUser['fa'] = {
+      name: "DEFAULT"
     }
     admin.database().ref('clubs/').child(user.uid).set(newUser);
     res.status(200).send({state: 'success', res: newUser});
