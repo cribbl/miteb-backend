@@ -5,7 +5,7 @@ var notif_controller = require('../controllers/notifController');
 
 router.post('/sendOTP', notif_controller.send_otp);
 
-router.get('/send-email', notif_controller.send_email);
+router.post('/send-email', notif_controller.send_email);
 
 router.get('/send-email-template', notif_controller.sendEventBookingStatusEmailTemplate);
 
