@@ -3,7 +3,7 @@ var router = express.Router();
 
 var user_controller = require('../controllers/userController');
 
-router.post('/signup', user_controller.signup);
+router.post('/signup-club', user_controller.signup);
 
 router.get('/update-user', user_controller.update_user);
 
