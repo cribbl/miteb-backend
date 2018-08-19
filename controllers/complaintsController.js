@@ -1,5 +1,4 @@
 const admin = require('firebase-admin');
-var serviceAccount = require("./../config.json");
 
 var Excel = require('exceljs');
 const moment = require('moment');
