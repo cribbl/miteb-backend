@@ -8,14 +8,28 @@ const fs = require('fs')
 var cors = require('cors')
 var pdf = require('html-pdf');
 var ejs = require('ejs');
+const axios = require('axios');
 const smtpTransport = require('nodemailer-smtp-transport')
 // var EmailTemplate = require('email-templates').EmailTemplate;
-const sc_uid = "9xdTvUjqtuYI5yYOJ4BbhsPAIyx2";
-const ad_uid = "DAAhD2EBqvQujYGITPAdBfZtZEH3";
-const so_uid = "raMsWfP6m9dlNl6T6k7jTnfGlxG3";
+const sc_uid = "studentcouncil";
+const ad_uid = "associatedirector";
+const so_uid = "securityofficer";
+
 const img_approved = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fapproved.png?alt=media&token=d8cafb02-d31c-4afc-b940-f793f349e6c2";
 const img_flagged = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fflagged.png?alt=media&token=8f8ce92c-3f6a-472f-b323-e86adfdac338";
 const img_rejected = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Frejected.png?alt=media&token=cef33f96-768e-43b1-aaa5-bffc27f0fdaf";
+
+exports.send_sms = function(req, res) {
+  var params = req.body;
+  axios.post('https://sfdjt9wg4c.execute-api.us-east-1.amazonaws.com/dev', params)
+  .then(function(resp) {
+    res.status(200).send("SMS SENT TO " + req.body.to);
+  })
+  .catch(function(err) {
+    console.log(err)
+    res.status(200).send(err);
+  })
+}
 
 exports.send_otp = function(req,res) {
   // var userID = req.query.userID;
