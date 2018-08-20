@@ -17,7 +17,8 @@ app.use(function(req, res, next) {
 })
 
 app.get('/', function(req, res) {
-	res.render('test')
+	res.send(`This is the ${app.settings.env} server`);
+	// res.render('test')
 })
 
 var userRoutes = 	require('./routes/user')
