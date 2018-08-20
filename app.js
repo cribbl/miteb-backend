@@ -4,7 +4,14 @@ const bodyParser = require('body-parser')
 require('./config/config.js');
 app = express();
 var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', 'https://staging.cribblservices.com');
+	var devAllowedOrigins = ['http://localhost:3000', 'https://staging.cribblservices.com'];
+	var prodAllowedOrigins = ['https://prod.cribblservices.com'];
+
+	var allowedOrigins = process.env.NODE_ENV == 'production' ? prodAllowedOrigins : devAllowedOrigins;
+    var origin = req.headers.origin;
+	if(allowedOrigins.indexOf(origin) > -1){
+	   res.setHeader('Access-Control-Allow-Origin', origin);
+	}
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
 
