@@ -19,8 +19,9 @@ exports.signup_club = function(req, res) {
     newUser['password'] = null,
     newUser['uid'] = user.uid;
     newUser['isApproved'] = false;
-    newUser['isClub'] = true,
-    newUser['isFA'] = false,
+    newUser['isClub'] = true;
+    newUser['isFA'] = false;
+    newUser['abbrv'] = newUser.abbrv;
     newUser['notificationSettings'] = {
       email: 1,
       sms: 0
@@ -61,7 +62,7 @@ exports.signup_fa = function(req, res) {
       })
       .then(function(user) {
         newUser['password'] = null;
-        newUser['nameAbbrv'] = "FA";
+        newUser['abbrv'] = "FA";
         newUser['uid'] = user.uid;
         newUser['clubID'] = newUser.clubID;
         newUser['isApproved'] = true;
@@ -82,6 +83,26 @@ exports.signup_fa = function(req, res) {
       })
     }
   });
+};
+
+exports.custom_signup = function(req, res) {
+  console.log(req.query);
+      admin.auth().createUser({
+        uid: "dumm408FA",
+        email: "dummymitfa@gmail.com",
+        password: "***REMOVED***",
+      })
+      .then(function(user) {
+        newUser['password'] = null;
+        newUser['uid'] = user.uid;
+        console.log(newUser);
+        // admin.database().ref('users/').child(user.uid).set(newUser);
+        res.status(200).send({state: 'success', newUser: newUser});
+      })
+      .catch(function(err) {
+        console.log(err.errorInfo);
+        res.status(200).send({state: 'fail', err: err.errorInfo});
+      })
 };
 
 exports.update_user = function(req, res) {
