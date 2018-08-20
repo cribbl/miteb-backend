@@ -3,18 +3,26 @@ const cors = require('cors');
 const bodyParser = require('body-parser')
 require('./config/config.js');
 app = express();
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', 'https://staging.cribblservices.com/*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+    next();
+}
 
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(allowCrossDomain);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
-app.use(function(req, res, next) {
-	// if((req.headers.authorization == 'secret')) {
-	// 	return res.status(403).send({error: 'Unauthorised'});
-	// }
-	next();
-})
+// app.use(function(req, res, next) {
+// 	// if((req.headers.authorization == 'secret')) {
+// 	// 	return res.status(403).send({error: 'Unauthorised'});
+// 	// }
+// 	next();
+// })
 
 app.get('/', function(req, res) {
 	res.send(`This is the ${app.settings.env} server`);
