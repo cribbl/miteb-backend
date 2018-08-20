@@ -7,6 +7,8 @@ router.post('/sendOTP', notif_controller.send_otp);
 
 router.post('/send-email', notif_controller.send_email);
 
+router.post('/send-sms', notif_controller.send_sms);
+
 router.get('/send-email-template', notif_controller.sendEventBookingStatusEmailTemplate);
 
 router.get('/send-complaint-email', notif_controller.sendComplaintEmailTemplate);
