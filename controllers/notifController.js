@@ -196,7 +196,7 @@ exports.sendComplaintEmailTemplate = function(req,res) {
     
     var mainOptions = {
         from: 'miteventbooking@gmail.com',
-        to: [booker_email,'priyamagrawal2208@gmail.com'],
+        to: [booker_email],
         subject: 'Complaint Lodging Successful',
         html: html
     };
@@ -226,7 +226,7 @@ exports.sendClubApprovalStatusEmailTemplate = function(req, res) {
     
     var mainOptions = {
         from: 'miteventbooking@gmail.com',
-        to: [club_email,'priyamagrawal2208@gmail.com'],
+        to: [club_email],
         subject: 'Club approved',
         html: html
     };
