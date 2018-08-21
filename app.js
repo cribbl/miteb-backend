@@ -36,6 +36,10 @@ app.get('/', function(req, res) {
 	// res.render('test')
 })
 
+app.get('/', function(req, res) {
+	res.render('test')
+})
+
 var userRoutes = 	require('./routes/user')
 var eventRoutes = require('./routes/event')
 var notifRoutes = require('./routes/notif')
