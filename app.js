@@ -24,12 +24,13 @@ app.use(bodyParser.json());
 app.use(allowCrossDomain);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
-// app.use(function(req, res, next) {
-// 	// if((req.headers.authorization == 'secret')) {
-// 	// 	return res.status(403).send({error: 'Unauthorised'});
-// 	// }
-// 	next();
-// })
+app.use(function(req, res, next) {
+	console.log(req)
+	// if((req.headers.authorization == 'secret')) {
+	// 	return res.status(403).send({error: 'Unauthorised'});
+	// }
+	next();
+})
 
 app.get('/', function(req, res) {
 	res.send(`This is the ${app.settings.env} server`);
