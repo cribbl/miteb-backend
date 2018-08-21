@@ -11,6 +11,7 @@ var ejs = require('ejs');
 const axios = require('axios');
 const smtpTransport = require('nodemailer-smtp-transport')
 // var EmailTemplate = require('email-templates').EmailTemplate;
+
 const sc_uid = "studentcouncil";
 const ad_uid = "associatedirector";
 const so_uid = "securityofficer";
@@ -120,12 +121,12 @@ exports.sendEventBookingStatusEmailTemplate = function(req, res) {
   if(mode == 'APPROVED') {
     file = 'approved.ejs';
     image_status = img_approved;
-    subject = 'event approved';
+    subject = 'Event Approved';
   }
   else if(mode == 'REJECTED') {
     file = 'rejected.ejs';
     image_status = img_rejected;
-    subject = 'event rejected';
+    subject = 'Event Rejected';
     switch(authority) {
       case 'FA':
         authority = 'Faculty Advisor';
@@ -138,7 +139,7 @@ exports.sendEventBookingStatusEmailTemplate = function(req, res) {
   else if(mode == 'FLAGGED') {
     file = 'flagged.ejs';
     image_status = img_flagged;
-    subject = 'event flagged';
+    subject = 'Event Flagged';
     switch(authority) {
       case 'FA':
         authority = 'Faculty Advisor';
@@ -229,13 +230,17 @@ exports.sendClubApprovalStatusEmailTemplate = function(req, res) {
         subject: 'Club approved',
         html: html
     };
-    transporter.sendMail(mainOptions, function (err, info) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log('Message sent: ' + info.response);
-        }
-    });
+    try {
+      transporter.sendMail(mainOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+          } else {
+              console.log('Message sent: ' + info.response);
+          }
+      });
+    } catch(err) {
+      console.log('error' + err);
+    }
 
   }) 
 }
