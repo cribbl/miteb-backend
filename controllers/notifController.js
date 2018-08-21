@@ -13,9 +13,9 @@ const smtpTransport = require('nodemailer-smtp-transport')
 const sc_uid = "9xdTvUjqtuYI5yYOJ4BbhsPAIyx2";
 const ad_uid = "DAAhD2EBqvQujYGITPAdBfZtZEH3";
 const so_uid = "raMsWfP6m9dlNl6T6k7jTnfGlxG3";
-const img_approved = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fapproved.png?alt=media&token=d8cafb02-d31c-4afc-b940-f793f349e6c2";
-const img_flagged = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fflagged.png?alt=media&token=8f8ce92c-3f6a-472f-b323-e86adfdac338";
-const img_rejected = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Frejected.png?alt=media&token=cef33f96-768e-43b1-aaa5-bffc27f0fdaf";
+// const img_approved = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fapproved.png?alt=media&token=d8cafb02-d31c-4afc-b940-f793f349e6c2";
+// const img_flagged = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fflagged.png?alt=media&token=8f8ce92c-3f6a-472f-b323-e86adfdac338";
+// const img_rejected = "https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Frejected.png?alt=media&token=cef33f96-768e-43b1-aaa5-bffc27f0fdaf";
 
 exports.send_otp = function(req,res) {
   // var userID = req.query.userID;
@@ -101,16 +101,16 @@ exports.sendEventBookingStatusEmailTemplate = function(req, res) {
   var event_name = req.query.event_name;
   var receipt_url = req.query.receipt_url;
   var file;
-  var image_status;
+  // var image_status;
   var subject;
   if(mode == 'APPROVED') {
     file = 'approved.ejs';
-    image_status = img_approved;
+    // image_status = img_approved;
     subject = 'event approved';
   }
   else if(mode == 'REJECTED') {
     file = 'rejected.ejs';
-    image_status = img_rejected;
+    // image_status = img_rejected;
     subject = 'event rejected';
     switch(authority) {
       case 'FA':
@@ -123,7 +123,7 @@ exports.sendEventBookingStatusEmailTemplate = function(req, res) {
   }
   else if(mode == 'FLAGGED') {
     file = 'flagged.ejs';
-    image_status = img_flagged;
+    // image_status = img_flagged;
     subject = 'event flagged';
     switch(authority) {
       case 'FA':
@@ -215,13 +215,17 @@ exports.sendClubApprovalStatusEmailTemplate = function(req, res) {
         subject: 'Club approved',
         html: html
     };
-    transporter.sendMail(mainOptions, function (err, info) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log('Message sent: ' + info.response);
-        }
-    });
+    try {
+      transporter.sendMail(mainOptions, function (err, info) {
+          if (err) {
+              console.log(err);
+          } else {
+              console.log('Message sent: ' + info.response);
+          }
+      });
+    } catch(err) {
+      console.log('error' + err);
+    }
 
   }) 
 }
