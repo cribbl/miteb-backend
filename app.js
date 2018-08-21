@@ -25,11 +25,18 @@ app.use(allowCrossDomain);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(function(req, res, next) {
-	console.log(req)
-	// if((req.headers.authorization == 'secret')) {
-	// 	return res.status(403).send({error: 'Unauthorised'});
-	// }
-	next();
+	console.log(req.headers)
+	if(process.env.NODE_ENV == 'production' && (req.headers.origin != 'https://prod.cribblservices.com')) {
+		res.status(503).send("Unauthorized");
+		return;
+	}
+	else if(process.env.NODE_ENV == 'development' && (req.headers.origin != 'https://staging.cribblservices.com')) {
+		res.status(503).send("Unauthorized");
+		return;
+	}
+	else{
+		next();
+	}
 })
 
 app.get('/', function(req, res) {
