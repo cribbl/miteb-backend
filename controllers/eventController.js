@@ -6,7 +6,7 @@ var Excel = require('exceljs');
 const moment = require('moment');
 const fs = require('fs');
 
-const AD_NAME = "Naranaya Shenoy"
+const AD_NAME = "Narayana Shenoy"
 const SO_NAME = "Ashok Rao"
 
 var config = require('../config/config.js');
@@ -38,6 +38,7 @@ exports.generate_pdf = function(req,res) {
       visibility = "visible";
     }
     ejs.renderFile(__dirname + '/eventpdf.ejs', {
+      event_id: eventID,
       club_name: snapshot.val().clubName,
       booker_name: snapshot.val().booker_name,
       booker_contact: snapshot.val().booker_contact,
@@ -123,6 +124,7 @@ exports.generate_sheet = function(req, res) {
         'September','October','November','December'];
         var clubID = req.query.uid;
         var type_event;
+        var event_id;
         var title;
         var sdate;
         var edate;
@@ -138,28 +140,29 @@ exports.generate_sheet = function(req, res) {
           var worksheet = workbook.addWorksheet('Event Details');
 
           worksheet.columns = [
-              { header: 'Type', key: 'type_event', width: 15 },
+              { header: 'Event ID', key: 'event_id', width: 25 },
+              { header: 'Type', key: 'type_event', width: 10 },
               { header: 'Title', key: 'title', width: 25 },
               { header: 'Start Date', key: 'sdate', width: 25 },
               { header: 'End Date', key: 'edate', width: 25 },
               { header: 'Rooms', key: 'roomlist', width: 25 },
-              { header: 'Booked By', key: 'booker_name', width: 25 }
+              { header: 'Booked By', key: 'booker_name', width: 15 }
           ];
           var eventID;
           clubRef.child('users/' + clubID + '/my_events').once("value", function(snapshot) {
           eventID = snapshotToArray(snapshot);
           var eventCount = eventID.length;
           var i = 0;
-          eventID.forEach(function(element){
-            //http://localhost:9000/event/generate-sheet?uid=9xdTvUjqtuYI5yYOJ4BbhsPAIyx2&mode=CUSTOM&from=12-07-2018&to=12-12-2018
-            clubRef.child('events/'+element).once("value", function(snapshot){
+          eventID.forEach(function(element) {
+            clubRef.child('events/'+element).once("value", function(snapshot) {
               sdate = snapshot.child('start_date').val();
               edate = snapshot.child('end_date').val();
               var t1 = moment(d1, 'DD-MM-YYYY');
               var t2 = moment(d2, 'DD-MM-YYYY');
               var t3 = moment(sdate, 'DD-MM-YYYY');
               var t4 = moment(edate, 'DD-MM-YYYY');
-              if(moment(t1).isSameOrBefore(t3) && moment(t2).isSameOrAfter(t4)){
+              if(moment(t1).isSameOrBefore(t3) && moment(t2).isSameOrAfter(t4)) {
+                event_id = element;
                 type_event = snapshot.child('type').val();
                 sdate = t3.format('dddd, Do MMMM YYYY');
                 edate = t4.format('dddd, Do MMMM YYYY');
@@ -175,7 +178,7 @@ exports.generate_sheet = function(req, res) {
                 });
                 roomlist = roomlist.replace(/,\s*$/, "");
                 booker_name = snapshot.child('booker_name').val();
-                worksheet.addRow({type_event: type_event, title: title, sdate: sdate,
+                worksheet.addRow({event_id: event_id, type_event: type_event, title: title, sdate: sdate,
                   edate: edate, roomlist: roomlist, booker_name: booker_name});
               }
               i+=1;
@@ -218,13 +221,15 @@ exports.generate_sheet = function(req, res) {
                   var worksheet = workbook.addWorksheet(months[mon]);
                 }
                 worksheet.columns = [
-                    { header: 'Type', key: 'type_event', width: 15 },
+                    { header: 'Event ID', key: 'event_id', width: 25 },
+                    { header: 'Type', key: 'type_event', width: 10 },
                     { header: 'Title', key: 'title', width: 25 },
                     { header: 'Start Date', key: 'sdate', width: 25 },
                     { header: 'End Date', key: 'edate', width: 25 },
                     { header: 'Rooms', key: 'roomlist', width: 25 },
-                    { header: 'Booked By', key: 'booker_name', width: 25 }
+                    { header: 'Booked By', key: 'booker_name', width: 15 }
                 ];
+                event_id = element;
                 type_event = snapshot.child('type').val();
                 sdate = t1.format('dddd, Do MMMM YYYY');
                 edate = t2.format('dddd, Do MMMM YYYY');
@@ -240,7 +245,7 @@ exports.generate_sheet = function(req, res) {
                 });
                 roomlist = roomlist.replace(/,\s*$/, "");
                 booker_name = snapshot.child('booker_name').val();
-                worksheet.addRow({type_event: type_event, title: title, sdate: sdate,
+                worksheet.addRow({event_id: event_id, type_event: type_event, title: title, sdate: sdate,
                   edate: edate, roomlist: roomlist, booker_name: booker_name});
                 i+=1;
                 if(i==eventCount)
