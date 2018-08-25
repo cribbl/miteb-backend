@@ -30,7 +30,7 @@ app.use(function(req, res, next) {
 		res.status(503).send("Unauthorized");
 		return;
 	}
-	else if(process.env.NODE_ENV == 'development' && (req.headers.origin != 'https://staging.cribblservices.com') {
+	else if(process.env.NODE_ENV == 'development' && (req.headers.origin != 'https://staging.cribblservices.com')) {
 		res.status(503).send("Unauthorized");
 		return;
 	}
