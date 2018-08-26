@@ -2,7 +2,7 @@ const admin = require('firebase-admin');
 
 function generateUID(abbrv) {
   var uid;
-  uid = abbrv.str.replace(/[^A-Z0-9]/ig, "").toLowerCase().slice(0, 4);
+  uid = abbrv.replace(/[^A-Z0-9]/ig, "").toLowerCase().slice(0, 4);
   uid = uid.concat(Math.random()*100000000);
   uid = uid.substring(0, 7);
   return uid;
