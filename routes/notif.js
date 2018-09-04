@@ -23,4 +23,6 @@ router.get('/send-clubApproval-email', notif_controller.sendClubApprovalStatusEm
 
 router.post('/send-push', notif_controller.send_push);
 
+router.get('/remind-push', notif_controller.send_push_custom);
+
 module.exports = router;
