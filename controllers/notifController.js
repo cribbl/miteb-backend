@@ -275,3 +275,46 @@ exports.send_push = function(req, res) {
     res.status(200).send(notifResponse)
   })
 };
+
+exports.send_push_custom = function(req, res) {
+  console.log(req.query);
+  var uid;
+  var notifResponse=[];
+  let params = {
+    uid: req.query.uid,
+      notificationOptions: {
+        notification: {
+          title: "Reminder",
+          body: "There are pending events. Kindly approve them.",
+          icon: 'https://laracasts.com/images/series/circles/do-you-react.png',
+          click_action: process.env.NODE_ENV === 'production' ? 'https://prod.cribblservices.com' : ''
+        }
+    }
+  };
+  var notifOptions = params.notificationOptions;
+  console.log(notifOptions)
+  switch(req.query.uid) {
+    case "SC": uid = sc_uid; break;
+    case "AD": uid = ad_uid; break;
+    case "SO": uid = so_uid; break;
+    default: uid = req.query.uid;
+  }
+
+  admin.database().ref('fcmTokens/' + uid).once('value', function(snapshot) {
+    for(let token in snapshot.val()) {
+      if(snapshot.val()[token] == true) {
+        admin.messaging().sendToDevice(token, notifOptions)
+        .then(function(resp) {
+          // res.status(200).send(resp)
+          console.log(resp)
+          notifResponse.push(resp);
+        })
+        .catch(function(err) {
+          console.log("error" + err);
+          res.status(302).send("error");
+        })
+      }
+    }
+    res.status(200).send(notifResponse)
+  })
+};

@@ -25,7 +25,7 @@ app.use(allowCrossDomain);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(function(req, res, next) {
-	console.log(req.headers)
+	// console.log(req.headers)
 	if(process.env.NODE_ENV == 'production' && (req.headers.origin != 'https://prod.cribblservices.com')) {
 		res.status(503).send("Unauthorized");
 		return;
