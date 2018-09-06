@@ -47,6 +47,8 @@ exports.generate_pdf = function(req,res) {
       type: snapshot.val().type,
       start_date: moment(snapshot.val().start_date, 'DD-MM-YYYY').format("dddd, DD MMM YYYY"),
       end_date: moment(snapshot.val().end_date, 'DD-MM-YYYY').format("dddd, DD MMM YYYY"),
+      start_time: snapshot.val().start_time,
+      end_time: snapshot.val().end_time,
       room_list: roomlist,
       isVisible: visibility,
       Notes: notes,
