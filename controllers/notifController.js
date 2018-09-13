@@ -1,24 +1,18 @@
 const admin = require('firebase-admin')
-const moment = require('moment')
-const express = require('express')
-const bodyParser = require('body-parser')
 const nodemailer = require('nodemailer')
-const AWS = require('aws-sdk')
-const fs = require('fs')
-var cors = require('cors')
-var pdf = require('html-pdf')
+const path = require('path')
 var ejs = require('ejs')
 const axios = require('axios')
 const smtpTransport = require('nodemailer-smtp-transport')
 // var EmailTemplate = require('email-templates').EmailTemplate;
 
-const sc_uid = 'studentcouncil'
-const ad_uid = 'associatedirector'
-const so_uid = 'securityofficer'
+const scUID = 'studentcouncil'
+const adUID = 'associatedirector'
+const soUID = 'securityofficer'
 
-const img_approved = 'https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fapproved.png?alt=media&token=d8cafb02-d31c-4afc-b940-f793f349e6c2'
-const img_flagged = 'https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fflagged.png?alt=media&token=8f8ce92c-3f6a-472f-b323-e86adfdac338'
-const img_rejected = 'https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Frejected.png?alt=media&token=cef33f96-768e-43b1-aaa5-bffc27f0fdaf'
+const imgApproved = 'https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fapproved.png?alt=media&token=d8cafb02-d31c-4afc-b940-f793f349e6c2'
+const imgFlagged = 'https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Fflagged.png?alt=media&token=8f8ce92c-3f6a-472f-b323-e86adfdac338'
+const imgRejected = 'https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mail%2Frejected.png?alt=media&token=cef33f96-768e-43b1-aaa5-bffc27f0fdaf'
 
 exports.send_sms = function (req, res) {
   var params = req.body
@@ -48,7 +42,7 @@ exports.send_otp = function (req, res) {
     timestamp: timestamp
   })
     .then(function () {
-      response = {
+      let response = {
         code: 'success',
         message: 'OTP was generated and stored in database' + code
       }
@@ -58,7 +52,7 @@ exports.send_otp = function (req, res) {
       res.status(200).send(response)
     })
     .catch(function (error) {
-      response = {
+      let response = {
         code: 'failure',
         message: error
       }
@@ -87,14 +81,14 @@ exports.send_email = function (req, res) {
   // send mail with defined transport object
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      return console.log(error)
       res.status(302).send(error)
+      return console.log(error)
     }
     console.log('Message sent: ' + info.response)
     res.status(200).send(info.response)
   })
 }
-var img_link
+
 var transporter = nodemailer.createTransport(smtpTransport({
   service: 'gmail',
   auth: {
@@ -108,49 +102,53 @@ exports.sendEventBookingStatusEmailTemplate = function (req, res) {
   var authority = req.query.authority
   var mode = req.query.mode
   var message = req.query.message
-  var club_name = req.query.club_name
-  var club_email = req.query.club_email
-  var booker_name = req.query.booker_name
-  var booker_email = req.query.booker_email
-  var event_name = req.query.event_name
-  var receipt_url = req.query.receipt_url
+  var clubName = req.query.club_name
+  var clubEmail = req.query.club_email
+  // var bookerName = req.query.booker_name
+  var bookerEmail = req.query.booker_email
+  var eventName = req.query.event_name
+  var receiptUrl = req.query.receipt_url
   var file
-  var image_status
+  var imageStatus
   var subject
-  if (mode == 'APPROVED') {
+  if (mode === 'APPROVED') {
     file = 'approved.ejs'
-    image_status = img_approved
+    imageStatus = imgApproved
     subject = 'Event Approved'
-  } else if (mode == 'REJECTED') {
+  } else if (mode === 'REJECTED') {
     file = 'rejected.ejs'
-    image_status = img_rejected
+    imageStatus = imgRejected
     subject = 'Event Rejected'
     switch (authority) {
       case 'FA':
         authority = 'Faculty Advisor'
+        break
       case 'AD':
         authority = 'Assistant Director'
+        break
       case 'SO':
         authority = 'Security Officer'
     }
-  } else if (mode == 'FLAGGED') {
+  } else if (mode === 'FLAGGED') {
     file = 'flagged.ejs'
-    image_status = img_flagged
+    imageStatus = imgFlagged
     subject = 'Event Flagged'
     switch (authority) {
       case 'FA':
         authority = 'Faculty Advisor'
+        break
       case 'AD':
         authority = 'Assistant Director'
+        break
       case 'SO':
         authority = 'Security Officer'
     }
   }
-  ejs.renderFile(__dirname + '/../emailTemplates/' + file, {
-    club_name: club_name,
-    event_name: event_name,
-    receipt_link: receipt_url,
-    img_status: image_status,
+  ejs.renderFile(path.join(__dirname, '/../emailTemplates/', file), {
+    club_name: clubName,
+    event_name: eventName,
+    receipt_link: receiptUrl,
+    img_status: imageStatus,
     authority: authority,
     message: message
   }, function (err, html) {
@@ -162,7 +160,7 @@ exports.sendEventBookingStatusEmailTemplate = function (req, res) {
 
     var mainOptions = {
       from: 'miteventbooking@gmail.com',
-      to: [club_email, booker_email],
+      to: [clubEmail, bookerEmail],
       subject: subject,
       html: html
     }
@@ -177,12 +175,12 @@ exports.sendEventBookingStatusEmailTemplate = function (req, res) {
 }
 
 exports.sendComplaintEmailTemplate = function (req, res) {
-  var booker_name = req.query.booker_name
-  var booker_email = req.query.booker_email
-  var complaint_subject = req.query.subject
-  ejs.renderFile(__dirname + '/../emailTemplates/complaint.ejs', {
-    booker_name: booker_name,
-    complaint_subject: complaint_subject
+  var bookerName = req.query.booker_name
+  var bookerEmail = req.query.booker_email
+  var complaintSubject = req.query.subject
+  ejs.renderFile(path.join(__dirname, '/../emailTemplates/complaint.ejs'), {
+    booker_name: bookerName,
+    complaint_subject: complaintSubject
   }, function (err, html) {
     if (err) {
       console.log(err)
@@ -192,7 +190,7 @@ exports.sendComplaintEmailTemplate = function (req, res) {
 
     var mainOptions = {
       from: 'miteventbooking@gmail.com',
-      to: [booker_email],
+      to: [bookerEmail],
       subject: 'Complaint Lodging Successful',
       html: html
     }
@@ -207,11 +205,11 @@ exports.sendComplaintEmailTemplate = function (req, res) {
 }
 
 exports.sendClubApprovalStatusEmailTemplate = function (req, res) {
-  var club_name = req.query.club_name
-  var club_email = req.query.club_email
-  ejs.renderFile(__dirname + '/../emailTemplates/club_approved.ejs', {
-    club_name: club_name,
-    club_email: club_email
+  var clubName = req.query.club_name
+  var clubEmail = req.query.club_email
+  ejs.renderFile(path.join(__dirname, '/../emailTemplates/club_approved.ejs'), {
+    club_name: clubName,
+    club_email: clubEmail
   }, function (err, html) {
     if (err) {
       console.log(err)
@@ -221,7 +219,7 @@ exports.sendClubApprovalStatusEmailTemplate = function (req, res) {
 
     var mainOptions = {
       from: 'miteventbooking@gmail.com',
-      to: [club_email],
+      to: [clubEmail],
       subject: 'Club approved',
       html: html
     }
@@ -245,15 +243,15 @@ exports.send_push = function (req, res) {
   var notifOptions = req.body.notificationOptions
   console.log(notifOptions)
   switch (req.body.uid) {
-    case 'SC': uid = sc_uid; break
-    case 'AD': uid = ad_uid; break
-    case 'SO': uid = so_uid; break
+    case 'SC': uid = scUID; break
+    case 'AD': uid = adUID; break
+    case 'SO': uid = soUID; break
     default: uid = req.body.uid
   }
 
   admin.database().ref('fcmTokens/' + uid).once('value', function (snapshot) {
     for (let token in snapshot.val()) {
-      if (snapshot.val()[token] == true) {
+      if (snapshot.val()[token] === true) {
         admin.messaging().sendToDevice(token, notifOptions)
           .then(function (resp) {
           // res.status(200).send(resp)
@@ -288,15 +286,15 @@ exports.send_push_custom = function (req, res) {
   var notifOptions = params.notificationOptions
   console.log(notifOptions)
   switch (req.query.uid) {
-    case 'SC': uid = sc_uid; break
-    case 'AD': uid = ad_uid; break
-    case 'SO': uid = so_uid; break
+    case 'SC': uid = scUID; break
+    case 'AD': uid = adUID; break
+    case 'SO': uid = soUID; break
     default: uid = req.query.uid
   }
 
   admin.database().ref('fcmTokens/' + uid).once('value', function (snapshot) {
     for (let token in snapshot.val()) {
-      if (snapshot.val()[token] == true) {
+      if (snapshot.val()[token] === true) {
         admin.messaging().sendToDevice(token, notifOptions)
           .then(function (resp) {
           // res.status(200).send(resp)

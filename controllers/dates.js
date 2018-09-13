@@ -1,6 +1,6 @@
 const moment = require('moment')
-var updateDates = function (start_date, end_date) {
-  var date = start_date
+var updateDates = function (startDate, endDate) {
+  var date = startDate
   var dateArr = []
 
   do {
@@ -8,7 +8,7 @@ var updateDates = function (start_date, end_date) {
     date = moment(date).add(1, 'days')
     dateArr.push(datex)
     console.log(datex)
-  } while (moment(date).format('DD-MM-YYYY') != moment(end_date).add(1, 'days').format('DD-MM-YYYY'))
+  } while (moment(date).format('DD-MM-YYYY') !== moment(endDate).add(1, 'days').format('DD-MM-YYYY'))
 }
 
 var d1 = new Date('23-08-2018')

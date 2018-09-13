@@ -1,8 +1,8 @@
 var express = require('express')
 var router = express.Router()
 
-var complaints_controller = require('../controllers/complaintsController')
+var complaintsController = require('../controllers/complaintsController')
 
-router.get('/generate-sheet', complaints_controller.generate_sheet)
+router.get('/generate-sheet', complaintsController.generate_sheet)
 
 module.exports = router
