@@ -5,6 +5,7 @@ var pdf = require('html-pdf')
 var Excel = require('exceljs')
 const moment = require('moment')
 const fs = require('fs')
+const path = require('path')
 
 const AD_NAME = 'Narayana Shenoy'
 const SO_NAME = 'Ashok Rao'
@@ -22,12 +23,12 @@ exports.generate_pdf = function (req, res) {
     var rooms = snapshot.val().rooms
     var roomlist = ''
     // determines the academic block according to the first digit as array index
-    var room_block = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
+    var roomBlock = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
     rooms.forEach(function (room) {
       var block = Math.floor(room / 1000) - 1
-      var room_no = room % 1000
-      block = room_block[block]
-      roomlist += block + '-' + room_no + ', '
+      var roomNo = room % 1000
+      block = roomBlock[block]
+      roomlist += block + '-' + roomNo + ', '
     })
     roomlist = roomlist.replace(/,\s*$/, '')
     var notes
@@ -36,7 +37,7 @@ exports.generate_pdf = function (req, res) {
       notes = snapshot.val().notes
       visibility = 'visible'
     }
-    ejs.renderFile(__dirname + '/eventpdf.ejs', {
+    ejs.renderFile(path.join(__dirname, '/eventpdf.ejs'), {
       event_id: eventID,
       club_name: snapshot.val().clubName,
       booker_name: snapshot.val().booker_name,
@@ -99,35 +100,36 @@ exports.generate_pdf = function (req, res) {
   })
 }
 
+function snapshotToArray (snapshot) {
+  var returnArr = []
+
+  snapshot.forEach(function (childSnapshot) {
+    var item = childSnapshot.val()
+    item.key = childSnapshot.key
+
+    returnArr.push(item)
+  })
+
+  return returnArr
+}
+
 exports.generate_sheet = function (req, res) {
   try {
-    function snapshotToArray (snapshot) {
-      var returnArr = []
-
-      snapshot.forEach(function (childSnapshot) {
-        var item = childSnapshot.val()
-        item.key = childSnapshot.key
-
-        returnArr.push(item)
-      })
-
-      return returnArr
-    };
     var months = ['January', 'Feburary', 'March', 'April',
       'May', 'June', 'July', 'August',
       'September', 'October', 'November', 'December']
     var clubID = req.query.uid
-    var type_event
-    var event_id
+    var typeEvent
+    var eventId
     var title
     var sdate
     var edate
     var roomlist
-    var booker_name
+    var bookerName
     var workbook = new Excel.Workbook()
     var type = req.query.mode
     var clubRef = admin.database().ref()
-    if (type == 'CUSTOM') {
+    if (type === 'CUSTOM') {
       var d1 = req.query.from
       var d2 = req.query.to
       var worksheet = workbook.addWorksheet('Event Details')
@@ -155,35 +157,37 @@ exports.generate_sheet = function (req, res) {
             var t3 = moment(sdate, 'DD-MM-YYYY')
             var t4 = moment(edate, 'DD-MM-YYYY')
             if (moment(t1).isSameOrBefore(t3) && moment(t2).isSameOrAfter(t4)) {
-              event_id = element
-              type_event = snapshot.child('type').val()
+              eventId = element
+              typeEvent = snapshot.child('type').val()
               sdate = t3.format('dddd, Do MMMM YYYY')
               edate = t4.format('dddd, Do MMMM YYYY')
               title = snapshot.child('title').val()
               var rooms = snapshot.child('rooms/').val()
               roomlist = ''
-              var room_block = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
+              var roomBlock = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
               rooms.forEach(function (room) {
                 var block = Math.floor(room / 1000) - 1
-                var room_no = room % 1000
-                block = room_block[block]
-                roomlist += block + '-' + room_no + ', '
+                var roomNo = room % 1000
+                block = roomBlock[block]
+                roomlist += block + '-' + roomNo + ', '
               })
               roomlist = roomlist.replace(/,\s*$/, '')
-              booker_name = snapshot.child('booker_name').val()
-              worksheet.addRow({ event_id: event_id,
-                type_event: type_event,
+              bookerName = snapshot.child('booker_name').val()
+              worksheet.addRow({
+                event_id: eventId,
+                type_event: typeEvent,
                 title: title,
                 sdate: sdate,
                 edate: edate,
                 roomlist: roomlist,
-                booker_name: booker_name })
+                booker_name: bookerName
+              })
             }
             i += 1
-            if (i == eventCount) {
-              workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function () {
+            if (i === eventCount) {
+              workbook.xlsx.writeFile(path.join(__dirname, '/eventDetails.xlsx')).then(function () {
                 console.log('file is written')
-                res.download(__dirname + '/eventDetails.xlsx', function (err, result) {
+                res.download(path.join(__dirname, '/eventDetails.xlsx'), function (err, result) {
                   if (err) {
                     console.log('Error downloading file: ' + err)
                   } else {
@@ -195,9 +199,8 @@ exports.generate_sheet = function (req, res) {
           })
         })
       })
-    } else if (type == 'ALL') {
+    } else if (type === 'ALL') {
       console.log('extract monthly')
-      var eventID
       clubRef.child('users/' + clubID + '/my_events').once('value', function (snapshot) {
         eventID = snapshotToArray(snapshot)
         var eventCount = eventID.length
@@ -210,7 +213,7 @@ exports.generate_sheet = function (req, res) {
             var t2 = moment(edate, 'DD-MM-YYYY')
             var mon = t1.month()
             if (workbook.getWorksheet(months[mon])) {
-              worksheet = workbook.getWorksheet(months[mon])
+              // worksheet = workbook.getWorksheet(months[mon])
             } else {
               var worksheet = workbook.addWorksheet(months[mon])
             }
@@ -223,34 +226,36 @@ exports.generate_sheet = function (req, res) {
               { header: 'Rooms', key: 'roomlist', width: 25 },
               { header: 'Booked By', key: 'booker_name', width: 15 }
             ]
-            event_id = element
-            type_event = snapshot.child('type').val()
+            eventId = element
+            typeEvent = snapshot.child('type').val()
             sdate = t1.format('dddd, Do MMMM YYYY')
             edate = t2.format('dddd, Do MMMM YYYY')
             title = snapshot.child('title').val()
             var rooms = snapshot.child('rooms/').val()
             roomlist = ''
-            var room_block = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
+            var roomBlock = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
             rooms.forEach(function (room) {
               var block = Math.floor(room / 1000) - 1
-              var room_no = room % 1000
-              block = room_block[block]
-              roomlist += block + '-' + room_no + ', '
+              var roomNo = room % 1000
+              block = roomBlock[block]
+              roomlist += block + '-' + roomNo + ', '
             })
             roomlist = roomlist.replace(/,\s*$/, '')
-            booker_name = snapshot.child('booker_name').val()
-            worksheet.addRow({ event_id: event_id,
-              type_event: type_event,
+            bookerName = snapshot.child('booker_name').val()
+            worksheet.addRow({
+              event_id: eventId,
+              type_event: typeEvent,
               title: title,
               sdate: sdate,
               edate: edate,
               roomlist: roomlist,
-              booker_name: booker_name })
+              booker_name: bookerName
+            })
             i += 1
-            if (i == eventCount) {
-              workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function () {
+            if (i === eventCount) {
+              workbook.xlsx.writeFile(path.join(__dirname, '/eventDetails.xlsx')).then(function () {
                 console.log('file is written')
-                res.download(__dirname + '/eventDetails.xlsx', function (err, result) {
+                res.download(path.join(__dirname, '/eventDetails.xlsx'), function (err, result) {
                   if (err) {
                     console.log('Error downloading file: ' + err)
                   } else {
