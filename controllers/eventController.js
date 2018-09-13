@@ -1,41 +1,40 @@
-const admin = require('firebase-admin');
+const admin = require('firebase-admin')
 
-var ejs = require('ejs');
-var pdf = require('html-pdf');
-var Excel = require('exceljs');
-const moment = require('moment');
-const fs = require('fs');
+var ejs = require('ejs')
+var pdf = require('html-pdf')
+var Excel = require('exceljs')
+const moment = require('moment')
+const fs = require('fs')
 
-const AD_NAME = "Narayana Shenoy"
-const SO_NAME = "Ashok Rao"
+const AD_NAME = 'Narayana Shenoy'
+const SO_NAME = 'Ashok Rao'
 
-var config = require('../config/config.js');
+var config = require('../config/config.js')
 
-exports.generate_pdf = function(req,res) {
-  var eventID = req.query.eventID;
+exports.generate_pdf = function (req, res) {
+  var eventID = req.query.eventID
   var filename = `${eventID}.pdf`
 
-  var eventref = admin.database().ref('events/' + eventID);
-  eventref.once("value", function(snapshot) {
-    var html;
+  var eventref = admin.database().ref('events/' + eventID)
+  eventref.once('value', function (snapshot) {
+    var html
     // Room selecting logic
-    var rooms = snapshot.val().rooms;
-    var roomlist = "";
+    var rooms = snapshot.val().rooms
+    var roomlist = ''
     // determines the academic block according to the first digit as array index
-    var room_block = ["AB-1","AB-2","NLH","IC","AB-5"];
-    rooms.forEach(function(room){
-      var block = Math.floor(room/1000) - 1;
-      var room_no = room%1000;
-      block = room_block[block];
-      roomlist+=block + "-" + room_no + ", ";
-    });
-    roomlist = roomlist.replace(/,\s*$/, "");
-    var notes;
-    var visibility = "hidden";
-    if(snapshot.val().notes)
-    {
-      notes = snapshot.val().notes;
-      visibility = "visible";
+    var room_block = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
+    rooms.forEach(function (room) {
+      var block = Math.floor(room / 1000) - 1
+      var room_no = room % 1000
+      block = room_block[block]
+      roomlist += block + '-' + room_no + ', '
+    })
+    roomlist = roomlist.replace(/,\s*$/, '')
+    var notes
+    var visibility = 'hidden'
+    if (snapshot.val().notes) {
+      notes = snapshot.val().notes
+      visibility = 'visible'
     }
     ejs.renderFile(__dirname + '/eventpdf.ejs', {
       event_id: eventID,
@@ -45,8 +44,8 @@ exports.generate_pdf = function(req,res) {
       booker_reg_no: snapshot.val().booker_reg_no,
       title: snapshot.val().title,
       type: snapshot.val().type,
-      start_date: moment(snapshot.val().start_date, 'DD-MM-YYYY').format("dddd, DD MMM YYYY"),
-      end_date: moment(snapshot.val().end_date, 'DD-MM-YYYY').format("dddd, DD MMM YYYY"),
+      start_date: moment(snapshot.val().start_date, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
+      end_date: moment(snapshot.val().end_date, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
       start_time: snapshot.val().start_time,
       end_time: snapshot.val().end_time,
       room_list: roomlist,
@@ -57,91 +56,165 @@ exports.generate_pdf = function(req,res) {
       so_name: SO_NAME,
       fa_date: snapshot.val().FA_date,
       ad_date: snapshot.val().AD_date,
-      so_date: snapshot.val().SO_date,
-    }, function(err, result) {
+      so_date: snapshot.val().SO_date
+    }, function (err, result) {
       if (result) {
-         html = result;
+        html = result
+      } else {
+        res.end('An error occurred')
+        console.log(err)
       }
-      else {
-         res.end('An error occurred');
-         console.log(err);
-      }
-  });
+    })
     var options = {
       filename: filename,
-      height: "870px",
-      width: "650px",
+      height: '870px',
+      width: '650px',
       orientation: 'portrait',
-      type: "pdf",
+      type: 'pdf',
       timeout: '30000',
-      border: "10",
-    };
-
-  pdf.create(html, options).toFile(function(err, result) {
-    if (err) {
-      console.log(err);
+      border: '10'
     }
-    else {
-      config.uploadToS3(filename, (err, downloadURL) => {
-        if(err) {
-          res.status(200).send(err)
-          return
-        }
-        else {
-          admin.database().ref('events').child(eventID + '/receiptURL').set(downloadURL);
-          fs.unlink(filename, (err) => {
-            if (err) throw err;
-            console.log(filename +' was deleted from local server');
-          });
-          res.status(200).send(downloadURL);
-          return;
-        }
 
-      })
-    }
-  });
+    pdf.create(html, options).toFile(function (err, result) {
+      if (err) {
+        console.log(err)
+      } else {
+        config.uploadToS3(filename, (err, downloadURL) => {
+          if (err) {
+            res.status(200).send(err)
+          } else {
+            admin.database().ref('events').child(eventID + '/receiptURL').set(downloadURL)
+            fs.unlink(filename, (err) => {
+              if (err) throw err
+              console.log(filename + ' was deleted from local server')
+            })
+            res.status(200).send(downloadURL)
+          }
+        })
+      }
+    })
   },
   function (error) {
-     console.log("Error: " + error.code);
-});
-  
-};
+    console.log('Error: ' + error.code)
+  })
+}
 
-exports.generate_sheet = function(req, res) {
+exports.generate_sheet = function (req, res) {
   try {
-      function snapshotToArray(snapshot) {
-        var returnArr = [];
+    function snapshotToArray (snapshot) {
+      var returnArr = []
 
-         snapshot.forEach(function(childSnapshot) {
-            var item = childSnapshot.val();
-            item.key = childSnapshot.key;
+      snapshot.forEach(function (childSnapshot) {
+        var item = childSnapshot.val()
+        item.key = childSnapshot.key
 
-            returnArr.push(item);
-          });
+        returnArr.push(item)
+      })
 
-    return returnArr;
+      return returnArr
     };
-        var months = ['January','Feburary','March','April',
-        'May','June','July','August',
-        'September','October','November','December'];
-        var clubID = req.query.uid;
-        var type_event;
-        var event_id;
-        var title;
-        var sdate;
-        var edate;
-        var roomlist;
-        var booker_name;
-        var workbook = new Excel.Workbook();
-        var type = req.query.mode;
-        var clubRef = admin.database().ref();
-        if(type == 'CUSTOM')
-        {
-          var d1 = req.query.from;
-          var d2 = req.query.to;
-          var worksheet = workbook.addWorksheet('Event Details');
+    var months = ['January', 'Feburary', 'March', 'April',
+      'May', 'June', 'July', 'August',
+      'September', 'October', 'November', 'December']
+    var clubID = req.query.uid
+    var type_event
+    var event_id
+    var title
+    var sdate
+    var edate
+    var roomlist
+    var booker_name
+    var workbook = new Excel.Workbook()
+    var type = req.query.mode
+    var clubRef = admin.database().ref()
+    if (type == 'CUSTOM') {
+      var d1 = req.query.from
+      var d2 = req.query.to
+      var worksheet = workbook.addWorksheet('Event Details')
 
-          worksheet.columns = [
+      worksheet.columns = [
+        { header: 'Event ID', key: 'event_id', width: 25 },
+        { header: 'Type', key: 'type_event', width: 10 },
+        { header: 'Title', key: 'title', width: 25 },
+        { header: 'Start Date', key: 'sdate', width: 25 },
+        { header: 'End Date', key: 'edate', width: 25 },
+        { header: 'Rooms', key: 'roomlist', width: 25 },
+        { header: 'Booked By', key: 'booker_name', width: 15 }
+      ]
+      var eventID
+      clubRef.child('users/' + clubID + '/my_events').once('value', function (snapshot) {
+        eventID = snapshotToArray(snapshot)
+        var eventCount = eventID.length
+        var i = 0
+        eventID.forEach(function (element) {
+          clubRef.child('events/' + element).once('value', function (snapshot) {
+            sdate = snapshot.child('start_date').val()
+            edate = snapshot.child('end_date').val()
+            var t1 = moment(d1, 'DD-MM-YYYY')
+            var t2 = moment(d2, 'DD-MM-YYYY')
+            var t3 = moment(sdate, 'DD-MM-YYYY')
+            var t4 = moment(edate, 'DD-MM-YYYY')
+            if (moment(t1).isSameOrBefore(t3) && moment(t2).isSameOrAfter(t4)) {
+              event_id = element
+              type_event = snapshot.child('type').val()
+              sdate = t3.format('dddd, Do MMMM YYYY')
+              edate = t4.format('dddd, Do MMMM YYYY')
+              title = snapshot.child('title').val()
+              var rooms = snapshot.child('rooms/').val()
+              roomlist = ''
+              var room_block = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
+              rooms.forEach(function (room) {
+                var block = Math.floor(room / 1000) - 1
+                var room_no = room % 1000
+                block = room_block[block]
+                roomlist += block + '-' + room_no + ', '
+              })
+              roomlist = roomlist.replace(/,\s*$/, '')
+              booker_name = snapshot.child('booker_name').val()
+              worksheet.addRow({ event_id: event_id,
+                type_event: type_event,
+                title: title,
+                sdate: sdate,
+                edate: edate,
+                roomlist: roomlist,
+                booker_name: booker_name })
+            }
+            i += 1
+            if (i == eventCount) {
+              workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function () {
+                console.log('file is written')
+                res.download(__dirname + '/eventDetails.xlsx', function (err, result) {
+                  if (err) {
+                    console.log('Error downloading file: ' + err)
+                  } else {
+                    console.log('File downloaded successfully')
+                  }
+                })
+              })
+            }
+          })
+        })
+      })
+    } else if (type == 'ALL') {
+      console.log('extract monthly')
+      var eventID
+      clubRef.child('users/' + clubID + '/my_events').once('value', function (snapshot) {
+        eventID = snapshotToArray(snapshot)
+        var eventCount = eventID.length
+        var i = 0
+        eventID.forEach(function (element) {
+          clubRef.child('events/' + element).once('value', function (snapshot) {
+            sdate = snapshot.child('start_date').val()
+            edate = snapshot.child('end_date').val()
+            var t1 = moment(sdate, 'DD-MM-YYYY')
+            var t2 = moment(edate, 'DD-MM-YYYY')
+            var mon = t1.month()
+            if (workbook.getWorksheet(months[mon])) {
+              worksheet = workbook.getWorksheet(months[mon])
+            } else {
+              var worksheet = workbook.addWorksheet(months[mon])
+            }
+            worksheet.columns = [
               { header: 'Event ID', key: 'event_id', width: 25 },
               { header: 'Type', key: 'type_event', width: 10 },
               { header: 'Title', key: 'title', width: 25 },
@@ -149,128 +222,48 @@ exports.generate_sheet = function(req, res) {
               { header: 'End Date', key: 'edate', width: 25 },
               { header: 'Rooms', key: 'roomlist', width: 25 },
               { header: 'Booked By', key: 'booker_name', width: 15 }
-          ];
-          var eventID;
-          clubRef.child('users/' + clubID + '/my_events').once("value", function(snapshot) {
-          eventID = snapshotToArray(snapshot);
-          var eventCount = eventID.length;
-          var i = 0;
-          eventID.forEach(function(element) {
-            clubRef.child('events/'+element).once("value", function(snapshot) {
-              sdate = snapshot.child('start_date').val();
-              edate = snapshot.child('end_date').val();
-              var t1 = moment(d1, 'DD-MM-YYYY');
-              var t2 = moment(d2, 'DD-MM-YYYY');
-              var t3 = moment(sdate, 'DD-MM-YYYY');
-              var t4 = moment(edate, 'DD-MM-YYYY');
-              if(moment(t1).isSameOrBefore(t3) && moment(t2).isSameOrAfter(t4)) {
-                event_id = element;
-                type_event = snapshot.child('type').val();
-                sdate = t3.format('dddd, Do MMMM YYYY');
-                edate = t4.format('dddd, Do MMMM YYYY');
-                title = snapshot.child('title').val();
-                var rooms = snapshot.child('rooms/').val();
-                roomlist = "";
-                var room_block = ["AB-1","AB-2","NLH","IC","AB-5"];
-                rooms.forEach(function(room){
-                  var block = Math.floor(room/1000) - 1;
-                  var room_no = room%1000;
-                  block = room_block[block];
-                  roomlist+=block + "-" + room_no + ", ";
-                });
-                roomlist = roomlist.replace(/,\s*$/, "");
-                booker_name = snapshot.child('booker_name').val();
-                worksheet.addRow({event_id: event_id, type_event: type_event, title: title, sdate: sdate,
-                  edate: edate, roomlist: roomlist, booker_name: booker_name});
-              }
-              i+=1;
-              if(i==eventCount) {
-                workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function() {
-                  console.log('file is written');
-                  res.download(__dirname + '/eventDetails.xlsx', function(err, result){
-                    if(err){
-                      console.log('Error downloading file: ' + err);  
-                    }
-                    else{
-                      console.log('File downloaded successfully');
-                    }
-                  });
-                });
-              }
+            ]
+            event_id = element
+            type_event = snapshot.child('type').val()
+            sdate = t1.format('dddd, Do MMMM YYYY')
+            edate = t2.format('dddd, Do MMMM YYYY')
+            title = snapshot.child('title').val()
+            var rooms = snapshot.child('rooms/').val()
+            roomlist = ''
+            var room_block = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
+            rooms.forEach(function (room) {
+              var block = Math.floor(room / 1000) - 1
+              var room_no = room % 1000
+              block = room_block[block]
+              roomlist += block + '-' + room_no + ', '
             })
+            roomlist = roomlist.replace(/,\s*$/, '')
+            booker_name = snapshot.child('booker_name').val()
+            worksheet.addRow({ event_id: event_id,
+              type_event: type_event,
+              title: title,
+              sdate: sdate,
+              edate: edate,
+              roomlist: roomlist,
+              booker_name: booker_name })
+            i += 1
+            if (i == eventCount) {
+              workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function () {
+                console.log('file is written')
+                res.download(__dirname + '/eventDetails.xlsx', function (err, result) {
+                  if (err) {
+                    console.log('Error downloading file: ' + err)
+                  } else {
+                    console.log('File downloaded successfully')
+                  }
+                })
+              })
+            }
           })
-       });
-        }
-        else if(type == 'ALL')
-        {
-          console.log('extract monthly');
-          var eventID;
-          clubRef.child('users/' + clubID + '/my_events').once("value", function(snapshot) {
-            eventID = snapshotToArray(snapshot);
-            var eventCount = eventID.length;
-            var i = 0;
-            eventID.forEach(function(element){
-              clubRef.child('events/'+element).once("value", function(snapshot) {
-                sdate = snapshot.child('start_date').val();
-                edate = snapshot.child('end_date').val();
-                var t1 = moment(sdate, 'DD-MM-YYYY');
-                var t2 = moment(edate, 'DD-MM-YYYY');
-                var mon = t1.month();
-                if(workbook.getWorksheet(months[mon])) {
-                  worksheet = workbook.getWorksheet(months[mon]);
-                }
-                else {
-                  var worksheet = workbook.addWorksheet(months[mon]);
-                }
-                worksheet.columns = [
-                    { header: 'Event ID', key: 'event_id', width: 25 },
-                    { header: 'Type', key: 'type_event', width: 10 },
-                    { header: 'Title', key: 'title', width: 25 },
-                    { header: 'Start Date', key: 'sdate', width: 25 },
-                    { header: 'End Date', key: 'edate', width: 25 },
-                    { header: 'Rooms', key: 'roomlist', width: 25 },
-                    { header: 'Booked By', key: 'booker_name', width: 15 }
-                ];
-                event_id = element;
-                type_event = snapshot.child('type').val();
-                sdate = t1.format('dddd, Do MMMM YYYY');
-                edate = t2.format('dddd, Do MMMM YYYY');
-                title = snapshot.child('title').val();
-                var rooms = snapshot.child('rooms/').val();
-                roomlist = "";
-                var room_block = ["AB-1","AB-2","NLH","IC","AB-5"];
-                rooms.forEach(function(room){
-                  var block = Math.floor(room/1000) - 1;
-                  var room_no = room%1000;
-                  block = room_block[block];
-                  roomlist+=block + "-" + room_no + ", ";
-                });
-                roomlist = roomlist.replace(/,\s*$/, "");
-                booker_name = snapshot.child('booker_name').val();
-                worksheet.addRow({event_id: event_id, type_event: type_event, title: title, sdate: sdate,
-                  edate: edate, roomlist: roomlist, booker_name: booker_name});
-                i+=1;
-                if(i==eventCount)
-              {
-                workbook.xlsx.writeFile(__dirname + '/eventDetails.xlsx').then(function() {
-              console.log('file is written');
-              res.download(__dirname + '/eventDetails.xlsx', function(err, result){
-                  if(err){
-                    console.log('Error downloading file: ' + err);  
-                  }
-                  else{
-                    console.log('File downloaded successfully');
-                  }
-              });
-          }); 
-              }
-              });
-              
-            });
-          });
-        }
-        
-    } catch(err) {
-        console.log('Error: ' + err);
-    }  
-};
+        })
+      })
+    }
+  } catch (err) {
+    console.log('Error: ' + err)
+  }
+}
