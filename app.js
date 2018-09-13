@@ -2,7 +2,9 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const path = require('path')
 require('./config/config.js')
+
 const app = express()
+
 var allowCrossDomain = function (req, res, next) {
   var devAllowedOrigins = ['http://localhost:3000', 'https://staging.cribblservices.com']
   var prodAllowedOrigins = ['https://prod.cribblservices.com']
@@ -18,14 +20,13 @@ var allowCrossDomain = function (req, res, next) {
   next()
 }
 
-// app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(allowCrossDomain)
 app.set('view engine', 'ejs')
 app.use(express.static(path.join(__dirname, 'public')))
+
 app.use(function (req, res, next) {
-  // console.log(req.headers)
   if (process.env.NODE_ENV === 'production' && (req.headers.origin !== 'https://prod.cribblservices.com')) {
     res.status(503).send('Unauthorized')
   } else if (process.env.NODE_ENV === 'development' && (req.headers.origin !== 'https://staging.cribblservices.com')) {
@@ -37,17 +38,16 @@ app.use(function (req, res, next) {
 
 app.get('/', function (req, res) {
   res.send(`This is the ${app.settings.env} server`)
-  // res.render('test')
 })
 
 app.get('/', function (req, res) {
   res.render('test')
 })
 
-var userRoutes = require('./routes/user')
-var eventRoutes = require('./routes/event')
-var notifRoutes = require('./routes/notif')
-var complaintsRoutes = require('./routes/complaints')
+const userRoutes = require('./routes/user')
+const eventRoutes = require('./routes/event')
+const notifRoutes = require('./routes/notif')
+const complaintsRoutes = require('./routes/complaints')
 
 app.use('/user', userRoutes)
 app.use('/event', eventRoutes)
