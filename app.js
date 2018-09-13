@@ -26,9 +26,9 @@ app.set('view engine', 'ejs')
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(function (req, res, next) {
   // console.log(req.headers)
-  if (process.env.NODE_ENV == 'production' && (req.headers.origin != 'https://prod.cribblservices.com')) {
+  if (process.env.NODE_ENV === 'production' && (req.headers.origin !== 'https://prod.cribblservices.com')) {
     res.status(503).send('Unauthorized')
-  } else if (process.env.NODE_ENV == 'development' && (req.headers.origin != 'https://staging.cribblservices.com')) {
+  } else if (process.env.NODE_ENV === 'development' && (req.headers.origin !== 'https://staging.cribblservices.com')) {
     res.status(503).send('Unauthorized')
   } else {
     next()
@@ -44,7 +44,7 @@ app.get('/', function (req, res) {
   res.render('test')
 })
 
-var userRoutes = 	require('./routes/user')
+var userRoutes = require('./routes/user')
 var eventRoutes = require('./routes/event')
 var notifRoutes = require('./routes/notif')
 var complaintsRoutes = require('./routes/complaints')
