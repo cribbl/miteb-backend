@@ -1,4 +1,3 @@
-const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const moment = require('moment')
 const express = require('express')
@@ -17,7 +16,8 @@ admin.initializeApp({
 
 const ref = admin.database().ref('rooms')
 
-app = express()
+const app = express()
+
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -31,32 +31,32 @@ app.get('/', function (req, res, next) {
   res.status(200).send('Hello World!')
 })
 
-function datesBetween (start_date, end_date) {
-  var start_date = moment(start_date)
-  var end_date = moment(end_date)
-}
+// function datesBetween (startDate, endDate) {
+//   var startDate = moment(startDate)
+//   var endDate = moment(endDate)
+// }
 
 app.get('/login', function (req, res, next) {
   var username = req.query.username
   var password = req.query.password
 
-  if (username == 'admin' && password == 'pass') {
-  	var user = {
-  	  username: 'admin',
-  	  email: 'admin@gmail.com',
-  	  displayName: 'Mr. Admin',
-  	  phone: '9988776644'
-  	}
-  	response = {
-  		code: 'success',
-  		user: user
-  	}
+  if (username === 'admin' && password === 'pass') {
+    var user = {
+      username: 'admin',
+      email: 'admin@gmail.com',
+      displayName: 'Mr. Admin',
+      phone: '9988776644'
+    }
+    let response = {
+      code: 'success',
+      user: user
+    }
     res.status(200).send(response)
   } else {
-  	response = {
-  		code: 'failed',
-  		user: null
-  	}
+    let response = {
+      code: 'failed',
+      user: null
+    }
     res.status(200).send(response)
   }
 })
@@ -67,12 +67,12 @@ app.post('/signup', function (req, res, next) {
     code: '',
     username: ''
   }
-  if (username == 'admin') {
+  if (username === 'admin') {
     response = {
       code: 'failed',
       message: 'Username already exists'
     }
-  } else if (username == 'root') {
+  } else if (username === 'root') {
     response = {
       code: 'failed',
       message: 'Username not allowed'
@@ -126,8 +126,8 @@ app.post('/send-email', function (req, res) {
   // send mail with defined transport object
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      return console.log(error)
       res.status(302).send(error)
+      return console.log(error)
     }
     console.log('Message sent: ' + info.response)
     res.status(200).send(info.response)
@@ -136,7 +136,7 @@ app.post('/send-email', function (req, res) {
 
 app.get('/update-user', function (req, res) {
   // var uid = String(req.query.uid);
-  uid = 'z8sTDxIHeVZhorxqcFxe4j6fvRp2'
+  let uid = 'z8sTDxIHeVZhorxqcFxe4j6fvRp2'
   // var newinfo = req.query.newinfo;
   // console.log(newinfo);
 
@@ -158,18 +158,18 @@ app.get('/update-user', function (req, res) {
 })
 
 app.get('/fetch_rooms/', function (req, res) {
-  var start_date = String(req.query.start_date)
-  var end_date = String(req.query.end_date)
+  var startDate = String(req.query.start_date)
+  var endDate = String(req.query.end_date)
 
-  var date = start_date
+  var date = startDate
 
   res.setHeader('Content-Type', 'text/plain')
 
-  res.write(start_date)
-  res.write(end_date)
+  res.write(startDate)
+  res.write(endDate)
   res.write(date)
 
-  while (date != end_date) {
+  while (date !== endDate) {
     date = moment(date).add(1, 'days').format('DD-MM-YYYY')
     res.write(date)
     ref.child(date).once('value')
@@ -198,7 +198,7 @@ app.get('/send-otp', function (req, res) {
     timestamp: timestamp
   })
     .then(function () {
-      response = {
+      let response = {
         code: 'success',
         message: 'OTP was generated and stored in database' + code
       }
@@ -208,7 +208,7 @@ app.get('/send-otp', function (req, res) {
       res.status(200).send(response)
     })
     .catch(function (error) {
-      response = {
+      let response = {
         code: 'failure',
         message: error
       }
@@ -227,7 +227,7 @@ app.get('/confirm-otp', function (req, res) {
     console.log(snapshot.val())
     let diff = timestamp - snapshot.val().timestamp
     console.log(diff)
-    if (code == snapshot.val().code && (diff < 120000)) {
+    if (code === snapshot.val().code && (diff < 120000)) {
       console.log('success')
       response = {
         code: 'success',
@@ -245,7 +245,7 @@ app.get('/confirm-otp', function (req, res) {
   })
 })
 
-var room_arr = {
+var roomArr = {
   '3101': false,
   '3102': false,
   '3103': false,
@@ -294,35 +294,35 @@ var futureDate = moment().add(1, 'days').add(1, 'months').format('DD-MM-YYYY') /
 
 // Cron-job function for inserting new date
 app.get('/cron-room', function (req, res) {
-  ref.child(futureDate).set(room_arr, function (err) {
+  ref.child(futureDate).set(roomArr, function (err) {
     if (err) {
-      response = {
-			 code: 'failure',
-			 message: err
+      let response = {
+        code: 'failure',
+        message: err
       }
-		  res.status(200).send('error in 1st func : ' + response)
-		  return
+      res.status(200).send('error in 1st func : ' + response)
+      return
     }
 
-    ref.child(today).set(room_arr, function (err) {
+    ref.child(today).set(roomArr, function (err) {
       if (err) {
-        response = {
+        let response = {
           code: 'failure',
           message: err
         }
         res.status(200).send('error in 2nd func : ' + response)
         return
-		  }
+      }
 
       ref.child(yesterday).set(null, function (err) {
         if (err) {
-          response = {
+          let response = {
             code: 'failure',
             message: err
           }
           res.status(200).send('error in 3rd func : ' + response)
         } else {
-          response = {
+          let response = {
             code: 'success',
             message: 'room-array updated for :' + futureDate
           }

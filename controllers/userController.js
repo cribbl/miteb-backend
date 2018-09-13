@@ -16,12 +16,11 @@ exports.signup_club = function (req, res) {
     password: newUser.password
   })
     .then(function (user) {
-      newUser['password'] = null,
+      newUser['password'] = null
       newUser['uid'] = user.uid
       newUser['isApproved'] = false
       newUser['isClub'] = true
       newUser['isFA'] = false
-      newUser['abbrv'] = newUser.abbrv
       newUser['notificationSettings'] = {
         email: 1,
         sms: 0
@@ -61,7 +60,6 @@ exports.signup_fa = function (req, res) {
           newUser['password'] = null
           newUser['abbrv'] = 'FA'
           newUser['uid'] = user.uid
-          newUser['clubID'] = newUser.clubID
           newUser['isApproved'] = true
           newUser['isFA'] = true
           newUser['notificationSettings'] = {
@@ -90,6 +88,7 @@ exports.custom_signup = function (req, res) {
     password: '***REMOVED***'
   })
     .then(function (user) {
+      let newUser
       newUser['password'] = null
       newUser['uid'] = user.uid
       console.log(newUser)
@@ -104,7 +103,7 @@ exports.custom_signup = function (req, res) {
 
 exports.update_user = function (req, res) {
   // var uid = String(req.query.uid);
-  uid = 'z8sTDxIHeVZhorxqcFxe4j6fvRp2'
+  let uid = 'z8sTDxIHeVZhorxqcFxe4j6fvRp2'
   // var newinfo = req.query.newinfo;
   // console.log(newinfo);
 
