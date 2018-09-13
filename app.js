@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const path = require('path')
 require('./config/config.js')
 const app = express()
 var allowCrossDomain = function (req, res, next) {
@@ -22,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(allowCrossDomain)
 app.set('view engine', 'ejs')
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(path.join(__dirname, 'public')))
 app.use(function (req, res, next) {
   // console.log(req.headers)
   if (process.env.NODE_ENV == 'production' && (req.headers.origin != 'https://prod.cribblservices.com')) {
