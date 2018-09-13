@@ -14,11 +14,9 @@ body {
 
 .left {
   float: left;
-  background-color: ;
 }
 
 .right {
-  background-color: ;
   float: right;
 }
 
@@ -123,10 +121,18 @@ th {
           <td><%= end_date %></td>
         </tr>
         <tr>
+          <td style="width: 30%">Start Time</td>
+          <td><%= start_time %></td>
+        </tr>
+        <tr>
+          <td style="width: 30%">End Time</td>
+          <td><%= end_time %></td>
+        </tr>
+        <tr>
           <td style="width: 30%">Rooms</td>
           <td><%= room_list %></td>
         </tr>
-        <tr style="visibility: <%= isVisible %>;">
+        <tr style="visibility: <%= isVisible %> ;">
           <td style="width: 30%">Notes</td>
           <td><%= Notes %></td>
         </tr>
@@ -140,7 +146,7 @@ th {
         <p>Faculty Advisor</p>
         <p><%= fa_date %></p>
       </div>
-      <div style="width: 28%; background-color: ; display: inline-block; padding-left: 10px;">
+      <div style="width: 28%; display: inline-block; padding-left: 10px;">
         <!-- <img src="https://test.materialcoder.com/project/home/images/signature-scan.png"> -->
         <p><%= ad_name %></p>
         <p>Associate Director</p>
