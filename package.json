@@ -2,7 +2,8 @@
   "name": "MITEventBooking",
   "description": "Backend for the MIT Event Booking Portal",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "test": "standard"
   },
   "dependencies": {
     "aws-sdk": "^2.249.1",
