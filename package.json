@@ -23,6 +23,7 @@
   "private": true,
   "devDependencies": {
     "connect-livereload": "^0.6.0",
-    "nodemon": "^1.17.4"
+    "nodemon": "^1.17.4",
+    "standard": "^12.0.1"
   }
 }
