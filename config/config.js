@@ -6,10 +6,10 @@ AWS.config.update({
 })
 
 const admin = require('firebase-admin')
-var serviceAccount = process.env.NODE_ENV == 'production' ? require('./../config.json') : require('./../config-development.json')
+var serviceAccount = process.env.NODE_ENV === 'production' ? require('./../config.json') : require('./../config-development.json')
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.NODE_ENV == 'production' ? 'https://staging-mit-event-booking.firebaseio.com' : 'https://mit-clubs-management.firebaseio.com'
+  databaseURL: process.env.NODE_ENV === 'production' ? 'https://staging-mit-event-booking.firebaseio.com' : 'https://mit-clubs-management.firebaseio.com'
 })
 
 const s3 = new AWS.S3()
@@ -28,7 +28,7 @@ exports.uploadToS3 = function (filename, callback) {
           callback(err)
         } else {
           console.log('uploaded succcessfully')
-          downloadURL = `https://s3.amazonaws.com/${bucketName}/${filename}`
+          let downloadURL = `https://s3.amazonaws.com/${bucketName}/${filename}`
           callback(null, downloadURL)
         }
       })
