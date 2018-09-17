@@ -1,10 +1,9 @@
-var express = require('express');
-var router = express.Router();
+var express = require('express')
+var router = express.Router()
 
-var event_controller = require('../controllers/eventController');
+var eventController = require('../controllers/eventController')
 
-router.get('/generate-pdf', event_controller.generate_pdf);
-router.get('/generate-sheet', event_controller.generate_sheet);
+router.get('/generate-pdf', eventController.generate_pdf)
+router.get('/generate-sheet', eventController.generate_sheet)
 
-
-module.exports = router;
+module.exports = router
