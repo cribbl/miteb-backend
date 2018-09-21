@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.com/cribblportal/MIT-Event-Booking-backend.svg?token=VkvSbZJB1bmjWZDEPRYh&branch=master)](https://travis-ci.com/cribblportal/MIT-Event-Booking-backend)
