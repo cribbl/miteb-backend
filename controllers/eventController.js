@@ -100,20 +100,117 @@ exports.generate_pdf = function (req, res) {
   })
 }
 
-function snapshotToArray (snapshot) {
-  var returnArr = []
 
-  snapshot.forEach(function (childSnapshot) {
-    var item = childSnapshot.val()
-    item.key = childSnapshot.key
+exports.generate_daily_events = function (req, res) {
+  function snapshotToArray (snapshot) {
+    var returnArr = []
 
-    returnArr.push(item)
+    snapshot.forEach(function (childSnapshot) {
+      var item = childSnapshot.val()
+      returnArr.push(item)
+    })
+
+    return returnArr
+  }
+  var date = req.query.date
+  var filename = path.join(__dirname, `events-${date}.pdf`)
+  console.log(date)
+  var eventsRef = admin.database().ref('to-be-held/' + date)
+  var eventRef = admin.database().ref()
+  // console.log(eventsRef);
+  eventsRef.once('value', function (snapshot) {
+    // if(snapshot.val()===null) {
+    //   console.log("No events Booked for this day")
+    // }
+    var html
+    var eventID = snapshotToArray(snapshot)
+    var eventCount = eventID.length
+    var i = 0
+    if (eventCount === 0) {
+      console.log('No events booked for this day')
+      res.status(200).send('No Events Booked')
+    } else {
+      var eventarr = []
+      var roomlist
+      eventID.forEach(function (element) {
+        eventRef.child('events/' + element).once('value', function (snapshot) {
+          console.log(snapshot.val().clubName)
+          console.log(element)
+          var rooms = snapshot.child('rooms/').val()
+          roomlist = ''
+          var roomBlock = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
+          rooms.forEach(function (room) {
+            var block = Math.floor(room / 1000) - 1
+            var roomNo = room % 1000
+            block = roomBlock[block]
+            roomlist += block + '-' + roomNo + ', '
+          })
+          roomlist = roomlist.replace(/,\s*$/, '')
+          var eventObj = []
+          eventObj.push(element)
+          eventObj.push(snapshot.val().clubName)
+          eventObj.push(roomlist)
+          eventarr.push(eventObj)
+          i++
+          if (i === eventCount) {
+            console.log(eventarr)
+            ejs.renderFile(path.join(__dirname, '/dailyeventpdf.ejs'), {
+              events: eventarr,
+              date: date
+            }, function (err, result) {
+              if (result) {
+                html = result
+              } else {
+                res.end('An error occurred')
+                console.log(err)
+              }
+            })
+            var options = {
+              filename: filename,
+              height: '870px',
+              width: '650px',
+              orientation: 'portrait',
+              type: 'pdf',
+              timeout: '30000',
+              border: '10'
+            }
+
+            pdf.create(html, options).toFile(function (err, result) {
+              if (err) {
+                console.log(err)
+              } else {
+                res.download(path.join(filename), function (err, result) {
+                  if (err) {
+                    console.log('Error downloading file: ' + err)
+                  } else {
+                    console.log('File downloaded successfully')
+                    fs.unlink(filename, (err) => {
+                      if (err) throw err
+                      console.log(filename + ' was deleted from local server')
+                    })
+                  }
+                })
+              }
+            })
+          }
+        })
+      })
+    }
   })
-
-  return returnArr
 }
 
 exports.generate_sheet = function (req, res) {
+  function snapshotToArray (snapshot) {
+    var returnArr = []
+    snapshot.forEach(function (childSnapshot) {
+      var item = childSnapshot.val()
+      item.key = childSnapshot.key
+
+      returnArr.push(item)
+    })
+
+    return returnArr
+  }
   try {
     var months = ['January', 'Feburary', 'March', 'April',
       'May', 'June', 'July', 'August',
