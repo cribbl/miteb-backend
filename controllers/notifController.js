@@ -260,7 +260,7 @@ exports.send_push = function (req, res) {
           })
           .catch(function (err) {
             console.log('error' + err)
-            res.status(302).send('error')
+            // res.status(302).send('error')
           })
       }
     }
