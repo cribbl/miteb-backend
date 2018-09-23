@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'helvetica';
+  height: 842px;
+  width:  595px;
+  position: relative;
+}
+
+.left {
+  float: left;
+  background-color: ;
+}
+
+.right {
+  background-color: ;
+  float: right;
+}
+
+.header {
+  align-items: center;
+  
+  height: 100px;
+
+  padding: 10px;
+  margin: 0;
+}
+
+.header img {
+  max-width: 30%;
+  height: 100px;
+}
+
+.label {
+  background-color: black;
+  color: white;
+  height: 20px;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-left: 8px;
+}
+
+.label h5 {
+  margin: 0;
+}
+
+.signatures {
+  width: 100%;
+}
+
+.signatures p {
+  margin: 5px;
+}
+
+.signatures img {
+  max-width: 80%;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+th {
+    text-align: left;
+}
+</style>
+</head>
+<body>
+  <center>
+    <div class="header">
+        <img class="left" style="max-width: 300px;" src="https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/mit-logo.jpg?alt=media&token=06f3d93b-6218-458f-b137-89ab1f78bdf3">
+
+        <img class="right" src="https://firebasestorage.googleapis.com/v0/b/mit-clubs-management.appspot.com/o/Fq10VDgTdAf7t4o4sEUrgY08rGg2%2FprofilePic?alt=media&token=4545a6cc-524e-4e24-9c75-7b022ba6ccd2">
+    </div>
+    
+    <div class="label">
+      <h5 class="left">DATE</h5>
+      <h5 class="right"><%= date %></h5>
+    </div>
+
+    <div>
+      <table style="width:100%; margin: 20px">
+      <caption style="text-align: left; font-weight: 700">Event Details</caption>
+        <tr>
+          <th>Event Id</th>
+          <th>Club Name</th>
+          <th>Rooms</th>
+        </tr>
+        <%for (var event in events){%>
+          <tr>
+            <td><%=events[event][0]%></td>
+            <td><%=events[event][1]%></td>
+            <td><%=events[event][2]%></td>
+          </tr>
+        <%}%>
+      </table>
+    </div>
+  </center>
+</body>
+</html>
