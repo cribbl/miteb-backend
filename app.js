@@ -33,6 +33,7 @@ app.use(function(req, res, next) {
 	else if(process.env.NODE_ENV == 'development' && (req.headers.origin != 'https://staging.cribblservices.com')) {
 		// res.status(503).send("Unauthorized");
 		// return;
+		next();
 	}
 	else{
 		next();
