@@ -20,6 +20,7 @@ var allowCrossDomain = function (req, res, next) {
   next()
 }
 
+<<<<<<< Updated upstream
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(allowCrossDomain)
@@ -34,6 +35,27 @@ app.use(function (req, res, next) {
   } else {
     next()
   }
+=======
+// app.use(cors())
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(allowCrossDomain);
+app.set('view engine', 'ejs');
+app.use(express.static(__dirname + '/public'));
+app.use(function(req, res, next) {
+	// console.log(req.headers)
+	if(process.env.NODE_ENV == 'production' && (req.headers.origin != 'https://prod.cribblservices.com')) {
+		res.status(503).send("Unauthorized");
+		return;
+	}
+	else if(process.env.NODE_ENV == 'development' && (req.headers.origin != 'https://staging.cribblservices.com')) {
+		// res.status(503).send("Unauthorized");
+		// return;
+	}
+	else{
+		next();
+	}
+>>>>>>> Stashed changes
 })
 
 app.get('/', function (req, res) {
