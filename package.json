@@ -1,6 +1,10 @@
 {
   "name": "MITEventBooking",
   "description": "Backend for the MIT Event Booking Portal",
+  "version": "0.1.0",
+  "engines": {
+    "node": "9.7.1"
+  },
   "scripts": {
     "start": "env-cmd .env nodemon app.js",
     "start:stage": "env-cmd .env.staging nodemon app.js",
