@@ -85,7 +85,7 @@ exports.custom_signup = function (req, res) {
   admin.auth().createUser({
     uid: 'dumm408FA',
     email: 'dummymitfa@gmail.com',
-    password: '***REMOVED***'
+    password: process.env.SENDER_EMAIL_PASSWORD
   })
     .then(function (user) {
       let newUser
@@ -110,7 +110,7 @@ exports.update_user = function (req, res) {
   var newinfox = {
     email: 'dummymitfa@gmail.com',
     emailVerified: true,
-    password: '***REMOVED***'
+    password: process.env.SENDER_EMAIL_PASSWORD
   }
 
   admin.auth().updateUser(uid, newinfox)
