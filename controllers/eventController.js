@@ -100,7 +100,6 @@ exports.generate_pdf = function (req, res) {
   })
 }
 
-
 exports.generate_daily_events = function (req, res) {
   function snapshotToArray (snapshot) {
     var returnArr = []
