@@ -2,7 +2,9 @@
   "name": "MITEventBooking",
   "description": "Backend for the MIT Event Booking Portal",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "env-cmd .env nodemon app.js",
+    "start:stage": "env-cmd .env.staging nodemon app.js",
+    "start:production": "env-cmd .env.production nodemon app.js",
     "test": "standard"
   },
   "dependencies": {
@@ -11,6 +13,7 @@
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "ejs": "^2.6.1",
+    "env-cmd": "^8.0.2",
     "email-templates": "^4.0.1",
     "exceljs": "^1.5.1",
     "express": "^4.16.2",

@@ -66,12 +66,12 @@ exports.send_email = function (req, res) {
   var transporter = nodemailer.createTransport(smtpTransport({
     service: 'gmail',
     auth: {
-      user: '***REMOVED***',
-      pass: '***REMOVED***'
+      user: process.env.SENDER_EMAIL,
+      pass: process.env.SENDER_EMAIL_PASSWORD
     }
   }))
   var mailOptions = {
-    from: '***REMOVED***', // sender address (who sends)
+    from: process.env.SENDER_EMAIL, // sender address (who sends)
     to: params.to, // list of receivers (who receives)
     subject: params.subject, // Subject line
     text: params.text, // plaintext body
@@ -92,8 +92,8 @@ exports.send_email = function (req, res) {
 var transporter = nodemailer.createTransport(smtpTransport({
   service: 'gmail',
   auth: {
-    user: '***REMOVED***',
-    pass: '***REMOVED***'
+    user: process.env.SENDER_EMAIL,
+    pass: process.env.SENDER_EMAIL_PASSWORD
   }
 }))
 
@@ -159,7 +159,7 @@ exports.sendEventBookingStatusEmailTemplate = function (req, res) {
     console.log('else')
 
     var mainOptions = {
-      from: '***REMOVED***',
+      from: process.env.SENDER_EMAIL,
       to: [clubEmail, bookerEmail],
       subject: subject,
       html: html
@@ -189,7 +189,7 @@ exports.sendComplaintEmailTemplate = function (req, res) {
     console.log('herh ehrherher')
 
     var mainOptions = {
-      from: '***REMOVED***',
+      from: process.env.SENDER_EMAIL,
       to: [bookerEmail],
       subject: 'Complaint Lodging Successful',
       html: html
@@ -218,7 +218,7 @@ exports.sendClubApprovalStatusEmailTemplate = function (req, res) {
     console.log('else')
 
     var mainOptions = {
-      from: '***REMOVED***',
+      from: process.env.SENDER_EMAIL,
       to: [clubEmail],
       subject: 'Club approved',
       html: html
