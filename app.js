@@ -25,7 +25,6 @@ app.use(allowCrossDomain)
 app.set('view engine', 'ejs')
 app.use(express.static(path.join(__dirname, '/public')))
 app.use(function (req, res, next) {
-  // console.log(req.headers)
   if (process.env.NODE_ENV === 'production' && (req.headers.origin !== 'https://prod.cribblservices.com')) {
     res.status(503).send('Unauthorized')
   }
@@ -34,7 +33,6 @@ app.use(function (req, res, next) {
 
 app.get('/', function (req, res) {
   res.send(`This is the ${app.settings.env} server`)
-  // res.render('test')
 })
 
 app.get('/', function (req, res) {
