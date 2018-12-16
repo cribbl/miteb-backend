@@ -3,8 +3,9 @@ const bodyParser = require('body-parser')
 const path = require('path')
 require('./config/config.js')
 const app = express()
+const PORT = 9000
 var allowCrossDomain = function (req, res, next) {
-  var devAllowedOrigins = ['http://localhost:3000', 'https://staging.cribblservices.com']
+  var devAllowedOrigins = ['http://localhost:' + PORT, 'https://staging.cribblservices.com']
   var prodAllowedOrigins = ['https://prod.cribblservices.com']
 
   var allowedOrigins = process.env.NODE_ENV === 'production' ? prodAllowedOrigins : devAllowedOrigins
@@ -50,6 +51,6 @@ app.use('/event', eventRoutes)
 app.use('/notif', notifRoutes)
 app.use('/complaint', complaintsRoutes)
 
-app.listen(process.env.PORT || 9000, function () {
+app.listen(process.env.PORT || PORT, function () {
   console.log('Express server listening on port %d in %s mode', this.address().port, app.settings.env)
 })
