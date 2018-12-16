@@ -27,13 +27,8 @@ app.use(function (req, res, next) {
   // console.log(req.headers)
   if (process.env.NODE_ENV === 'production' && (req.headers.origin !== 'https://prod.cribblservices.com')) {
     res.status(503).send('Unauthorized')
-  } else if (process.env.NODE_ENV === 'development' && (req.headers.origin !== 'https://staging.cribblservices.com')) {
-    // res.status(503).send("Unauthorized");
-    // return;
-    next()
-  } else {
-    next()
   }
+  next()
 })
 
 app.get('/', function (req, res) {
