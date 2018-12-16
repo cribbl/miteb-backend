@@ -6,10 +6,10 @@ var serviceAccount = require('./config.json')
 // shall change the dbURL based on env later
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://mit-clubs-management.firebaseio.com'
+  databaseURL: 'https://test-setup-cbd35.firebaseio.com'
 })
 
-var users = [
+const users = [
 	{
 		uid: 'associatedirector',
 		email: 'dummymitad@gmail.com',
@@ -42,23 +42,23 @@ var users = [
   	}
 ]
 
-add_basic_users = () => {
-	users.forEach(user => {
-		admin.auth().createUser( user )
-	    	.then(function (user) {
-	      	console.log(user.uid + ' created.')
-	    })
-	    .catch(function (err) {
-	    	console.log(err.errorInfo)
-	    	console.log(user.uid + ' failed to create.')
-	    })
-   	})
+let add_basic_users = () => {
+    users.forEach(user => {
+        admin.auth().createUser( user )
+            .then((user) => {
+                console.log(user.uid + ' created.')
+            })
+            .catch((err) => {
+                console.log(err.errorInfo)
+                console.log(user.uid + ' failed to create.')
+            })
+    })
 }
 
 // add_basic_users()
 
 
-var basic_db_data = {
+const basic_db_data = {
   "developers" : {
     "arushi" : {
       "facebook" : "https://www.facebook.com/arushi.nigam1",
@@ -209,10 +209,12 @@ var basic_db_data = {
   }
 }
 
-add_basic_db = () => {
-	admin.database().ref().child('/users').set(basic_db_data)
+let add_basic_db =  async () => {
+    await admin.database().ref().child('/users').set(basic_db_data)
+        .then(() => console.log("Succeeded"))
+        .catch(() => console.log("Failed"))
+    process.exit();
+
 }
 
-add_basic_db()
-
-process.exit()
+ add_basic_db();
