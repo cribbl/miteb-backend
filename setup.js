@@ -55,7 +55,7 @@ let add_basic_users = () => {
     })
 }
 
-// add_basic_users()
+add_basic_users()
 
 
 const basic_db_data = {
