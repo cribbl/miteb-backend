@@ -6,7 +6,7 @@ const serviceAccount = require('./config.json')
 // shall change the dbURL based on env later
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://test-setup-cbd35.firebaseio.com'
+  databaseURL: '<your_firebase_project_databaseURL>'
 })
 
 const users = [
@@ -17,13 +17,13 @@ const users = [
     emailVerified: true
   },
   {
-    uid: 'dumm123',
+    uid: 'dumm408',
     email: 'dummymitclub@gmail.com',
     password: 'Password@1234',
     emailVerified: true
   },
   {
-    uid: 'dumm123FA',
+    uid: 'dumm408FA',
     email: 'dummymitfa@gmail.com',
     password: 'Password@1234',
     emailVerified: true
@@ -60,9 +60,9 @@ addBasicUsers()
 const BASIC_DB_DATA = {
   'developers': {
     'arushi': {
-      'facebook': 'https://www.facebook.com/arushi.nigam1',
-      'github': 'https://github.com/Arushi1912',
-      'name': 'Arushi Nigam',
+      'facebook': 'https://www.facebook.com/',
+      'github': 'https://github.com/',
+      'name': 'Some Developer',
       'pos': 0,
       'profilePicURL': 'https://cdn.dribbble.com/users/244753/screenshots/3959959/nespresso.gif',
       'role': 'Front End Developer'
