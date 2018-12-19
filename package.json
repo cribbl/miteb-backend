@@ -27,7 +27,9 @@
     "moment": "^2.21.0",
     "nodemailer": "^4.6.4",
     "nodemailer-smtp-transport": "^2.7.4",
-    "npm": "^6.4.1"
+    "npm": "^6.4.1",
+    "phantomjs-prebuilt": "^2.1.13",
+    "uuid-v4": "^0.1.0"
   },
   "private": true,
   "devDependencies": {

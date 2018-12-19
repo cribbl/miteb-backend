@@ -15,6 +15,7 @@ var config = require('../config/config.js')
 exports.generate_pdf = function (req, res) {
   var eventID = req.query.eventID
   var filename = `${eventID}.pdf`
+  var filePath = 'receipts'
 
   var eventref = admin.database().ref('events/' + eventID)
   eventref.once('value', function (snapshot) {
@@ -80,13 +81,14 @@ exports.generate_pdf = function (req, res) {
       if (err) {
         console.log(err)
       } else {
-        config.uploadToS3(filename, (err, downloadURL) => {
-          if (err) {
-            res.status(200).send(err)
-          } else {
+        config.uploadToFirebase(filename, filePath, (err, downloadURL) => {
+          if(err) {
+            res.status(200).send(err);
+          }
+          else {
             admin.database().ref('events').child(eventID + '/receiptURL').set(downloadURL)
             fs.unlink(filename, (err) => {
-              if (err) throw err
+              if(err) throw err
               console.log(filename + ' was deleted from local server')
             })
             res.status(200).send(downloadURL)
