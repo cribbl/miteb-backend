@@ -6,12 +6,13 @@ AWS.config.update({
 })
 
 const admin = require('firebase-admin')
-// var serviceAccount = process.env.NODE_ENV === 'production' ? require('./../config.production.json') : require('./../config.development.json')
-
-var serviceAccount = require(process.env.PATH_TO_FIREBASE_CONFIG)
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert({
+    "private_key": process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+    "project_id": process.env.FIREBASE_PROJECT_ID
+  }),
   databaseURL: process.env.FIREBASE_DATABASE_URL
 })
 
