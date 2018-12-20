@@ -1,3 +1,21 @@
 language: node_js
 node_js:
-- '8'
+- '9'
+deploy:
+  provider: heroku
+  api_key:
+    secure: hC+KEBYHqoZXJL4tTj6AUSGXLGNAutKKLLiBmrnYo3uYHbt1vRg/3G560xFoO9sD7lV6NMSalX8ZbA90oPgua2w0d1UgFns/H57X4Pl9CuTrz+fnjEYeqUxKKHcU8+8Me4iSV5Kp90Ta6ImCBbdqtVDUpvsdkROD97YPmg0/VNjTcdeN8HZN4IC2zKAAAnkjk0DYcj3v4DKMV8O5+zLYBUIG3jn1zHBtyVDfXtbcTRJNDNv5ViTwtco2w7IWs/HHe2ObkzansKkbhKRW0iHYHrmdll0Hnnzi9+n9pG4ul6InoO1CpAbaqJGC7Mc951ViMt45nM5HGczEybbHHoPCFYKfqIlE6XE/TXTm7GD05a+72JniABhJ4leg3XD3s70u+UUyCLU4SH6F8W0BBKCXdJSI1e4ujJTm8YFhJvfWv0Kt88ti3hBifvucbPPnKUdfLkWm6u9h7WSpMuS0CJil09D2ZlM8esTMimqg+CVD9EKmFtjNdpkPEGNufkSs8+OWK1IzbdnkNmFpMlzBn8y79i194RRIquCO23dfbT/xN2pnmlFEuh2ObIBaJMgy1kZY8DelIei19YwEzQ6N47tuMHBGqTtu3sTo1xMT9TGStHMDxS5WJ+Ax5I/L+1fWQ0lkvgJj9HPR0kEXG/3yKQ3ngG37HTpq8AF7FvPPziNSC/I=
+  app:
+    master: miteb-backend-stage
+    prod: miteb-backend-prod
+  on:
+    all_branches: true
+    condition: "$TRAVIS_BRANCH =~ ^master|prod$"
+git:
+  depth: 3
+notifications:
+  webhooks:
+    urls:
+    - https://webhooks.gitter.im/e/981c11c12f51d5cbb07e
+    on_success: always
+    on_failure: always
