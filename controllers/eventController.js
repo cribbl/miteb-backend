@@ -82,13 +82,12 @@ exports.generate_pdf = function (req, res) {
         console.log(err)
       } else {
         config.uploadToFirebase(filename, filePath, (err, downloadURL) => {
-          if(err) {
-            res.status(200).send(err);
-          }
-          else {
+          if (err) {
+            res.status(200).send(err)
+          } else {
             admin.database().ref('events').child(eventID + '/receiptURL').set(downloadURL)
             fs.unlink(filename, (err) => {
-              if(err) throw err
+              if (err) throw err
               console.log(filename + ' was deleted from local server')
             })
             res.status(200).send(downloadURL)
