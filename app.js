@@ -3,8 +3,10 @@ const bodyParser = require('body-parser')
 const path = require('path')
 require('./config/config.js')
 const app = express()
+const PORT_FRONTEND = 3000
+const PORT_BACKEND = 9000
 var allowCrossDomain = function (req, res, next) {
-  var devAllowedOrigins = ['http://localhost:3000', 'https://staging.cribblservices.com']
+  var devAllowedOrigins = ['http://localhost:' + PORT_FRONTEND, 'https://staging.cribblservices.com']
   var prodAllowedOrigins = ['https://prod.cribblservices.com']
 
   var allowedOrigins = process.env.NODE_ENV === 'production' ? prodAllowedOrigins : devAllowedOrigins
@@ -24,21 +26,14 @@ app.use(allowCrossDomain)
 app.set('view engine', 'ejs')
 app.use(express.static(path.join(__dirname, '/public')))
 app.use(function (req, res, next) {
-  // console.log(req.headers)
   if (process.env.NODE_ENV === 'production' && (req.headers.origin !== 'https://prod.cribblservices.com')) {
     res.status(503).send('Unauthorized')
-  } else if (process.env.NODE_ENV === 'development' && (req.headers.origin !== 'https://staging.cribblservices.com')) {
-    // res.status(503).send("Unauthorized");
-    // return;
-    next()
-  } else {
-    next()
   }
+  next()
 })
 
 app.get('/', function (req, res) {
   res.send(`This is the ${app.settings.env} server`)
-  // res.render('test')
 })
 
 app.get('/', function (req, res) {
@@ -55,6 +50,6 @@ app.use('/event', eventRoutes)
 app.use('/notif', notifRoutes)
 app.use('/complaint', complaintsRoutes)
 
-app.listen(process.env.PORT || 9000, function () {
+app.listen(process.env.PORT || PORT_BACKEND, function () {
   console.log('Express server listening on port %d in %s mode', this.address().port, app.settings.env)
 })
