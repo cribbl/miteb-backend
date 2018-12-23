@@ -16,7 +16,10 @@ const imgRejected = 'https://firebasestorage.googleapis.com/v0/b/mit-clubs-manag
 
 exports.send_sms = function (req, res) {
   var params = req.body
-  axios.post('https://sfdjt9wg4c.execute-api.us-east-1.amazonaws.com/dev', params)
+  var headers = {
+    'Authorization': process.env.AUTHORIZATION_SECRET
+  }
+  axios.post('https://sfdjt9wg4c.execute-api.us-east-1.amazonaws.com/dev', params, { headers: headers })
     .then(function (resp) {
       res.status(200).send('SMS SENT TO ' + req.body.to)
     })
