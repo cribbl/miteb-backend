@@ -45,8 +45,8 @@ exports.generate_pdf = function (req, res) {
       booker_reg_no: snapshot.val().booker_reg_no,
       title: snapshot.val().title,
       type: snapshot.val().type,
-      start_date: moment(snapshot.val().start_date, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
-      end_date: moment(snapshot.val().end_date, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
+      startDate: moment(snapshot.val().startDate, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
+      endDate: moment(snapshot.val().endDate, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
       start_time: snapshot.val().start_time,
       end_time: snapshot.val().end_time,
       room_list: roomlist,
@@ -246,8 +246,8 @@ exports.generate_sheet = function (req, res) {
         var i = 0
         eventID.forEach(function (element) {
           clubRef.child('events/' + element).once('value', function (snapshot) {
-            sdate = snapshot.child('start_date').val()
-            edate = snapshot.child('end_date').val()
+            sdate = snapshot.child('startDate').val()
+            edate = snapshot.child('endDate').val()
             var t1 = moment(d1, 'DD-MM-YYYY')
             var t2 = moment(d2, 'DD-MM-YYYY')
             var t3 = moment(sdate, 'DD-MM-YYYY')
@@ -303,8 +303,8 @@ exports.generate_sheet = function (req, res) {
         var i = 0
         eventID.forEach(function (element) {
           clubRef.child('events/' + element).once('value', function (snapshot) {
-            sdate = snapshot.child('start_date').val()
-            edate = snapshot.child('end_date').val()
+            sdate = snapshot.child('startDate').val()
+            edate = snapshot.child('endDate').val()
             var t1 = moment(sdate, 'DD-MM-YYYY')
             var t2 = moment(edate, 'DD-MM-YYYY')
             var mon = t1.month()
