@@ -27,7 +27,7 @@ exports.uploadToFirebase = function(filename, filePath, callback) {
   }).then((data) => {
     console.log('uploaded succcessfully')
     let file = data[0]
-    let downloadURL = "https://firebasestorage.googleapis.com/v0/b/" + bucket.name + "/o/" + encodeURIComponent(file.name) + "?alt=media&token=" + uuid
+    let downloadURL = 'https://firebasestorage.googleapis.com/v0/b/' + bucket.name + '/o/' + encodeURIComponent(file.name) + '?alt=media&token=' + uuid
     callback(null, downloadURL)
   }).catch(err => {
     console.log('error ' + err)
