@@ -34,3 +34,27 @@ exports.uploadToFirebase = function(filename, filePath, callback) {
     callback(err)
   })
 }
+
+exports.generateLogoUrl = function(filepath, callback) {
+  let file = bucket.file(filepath)
+  file.exists().then((data) => {
+    if (data[0] === true) {
+      file.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 1000 * 60 * 60 * 2
+      }).then(signedUrls => {
+        console.log('Logo URL generated successfully')
+        callback(null, signedUrls)
+      }).catch(err => {
+        console.log('error' + err)
+        callback(err)
+      })
+    } else {
+      console.log('Logo does not exist')
+      callback(null, null)
+    }
+  }).catch(err => {
+    console.log('error ' + err)
+    callback(err)
+  })
+}

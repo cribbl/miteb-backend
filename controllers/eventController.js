@@ -38,59 +38,68 @@ exports.generate_pdf = function (req, res) {
       notes = snapshot.val().notes
       visibility = 'visible'
     }
-    ejs.renderFile(path.join(__dirname, '/eventpdf.ejs'), {
-      event_id: eventID,
-      club_name: snapshot.val().clubName,
-      booker_name: snapshot.val().booker_name,
-      booker_contact: snapshot.val().booker_contact,
-      booker_reg_no: snapshot.val().booker_reg_no,
-      title: snapshot.val().title,
-      type: snapshot.val().type,
-      startDate: moment(snapshot.val().startDate, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
-      endDate: moment(snapshot.val().endDate, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
-      start_time: snapshot.val().start_time,
-      end_time: snapshot.val().end_time,
-      room_list: roomlist,
-      isVisible: visibility,
-      Notes: notes,
-      fa_name: snapshot.val().FA_name,
-      ad_name: AD_NAME,
-      so_name: SO_NAME,
-      fa_date: snapshot.val().FA_date,
-      ad_date: snapshot.val().AD_date,
-      so_date: snapshot.val().SO_date
-    }, function (err, result) {
-      if (result) {
-        html = result
-      } else {
-        res.end('An error occurred')
-        console.log(err)
-      }
-    })
-    var options = {
-      filename: filename,
-      height: '870px',
-      width: '650px',
-      orientation: 'portrait',
-      type: 'pdf',
-      timeout: '30000',
-      border: '10'
-    }
-
-    pdf.create(html, options).toFile(function (err, result) {
+    var clubLogo
+    config.generateLogoUrl(`${snapshot.val().clubID}/profilePic.png`, (err, signedUrls) => {
       if (err) {
-        console.log(err)
+        res.status(200).send(err)
       } else {
-        config.uploadToFirebase(filename, filePath, (err, downloadURL) => {
-          if (err) {
-            res.status(200).send(err)
+        clubLogo = signedUrls
+        ejs.renderFile(path.join(__dirname, '/eventpdf.ejs'), {
+          event_id: eventID,
+          club_name: snapshot.val().clubName,
+          booker_name: snapshot.val().booker_name,
+          booker_contact: snapshot.val().booker_contact,
+          booker_reg_no: snapshot.val().booker_reg_no,
+          title: snapshot.val().title,
+          type: snapshot.val().type,
+          startDate: moment(snapshot.val().startDate, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
+          endDate: moment(snapshot.val().endDate, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
+          start_time: snapshot.val().start_time,
+          end_time: snapshot.val().end_time,
+          room_list: roomlist,
+          isVisible: visibility,
+          Notes: notes,
+          fa_name: snapshot.val().FA_name,
+          ad_name: AD_NAME,
+          so_name: SO_NAME,
+          fa_date: snapshot.val().FA_date,
+          ad_date: snapshot.val().AD_date,
+          so_date: snapshot.val().SO_date,
+          club_logo: clubLogo
+        }, function (err, result) {
+          if (result) {
+            html = result
           } else {
-            admin.database().ref('events').child(eventID + '/receiptURL').set(downloadURL)
-            fs.unlink(filename, (err) => {
-              if (err) throw err
-              console.log(filename + ' was deleted from local server')
+            res.end('An error occurred')
+            console.log(err)
+          }
+        })
+        var options = {
+          filename: filename,
+          height: '870px',
+          width: '650px',
+          orientation: 'portrait',
+          type: 'pdf',
+          timeout: '30000',
+          border: '10'
+        }
+
+        pdf.create(html, options).toFile(function (err, result) {
+          if (err) {
+            console.log(err)
+          } else {
+            config.uploadToFirebase(filename, filePath, (err, downloadURL) => {
+              if (err) {
+                res.status(200).send(err)
+              } else {
+                admin.database().ref('events').child(eventID + '/receiptURL').set(downloadURL)
+                // fs.unlink(filename, (err) => {
+                //   if (err) throw err
+                //   console.log(filename + ' was deleted from local server')
+                // })
+                res.status(200).send(downloadURL)
+              }
             })
-            res.status(200).send(downloadURL)
           }
         })
       }
