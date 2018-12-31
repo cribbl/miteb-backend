@@ -39,7 +39,7 @@ exports.generate_pdf = function (req, res) {
       visibility = 'visible'
     }
     var clubLogo
-    config.generateLogoUrl(`${snapshot.val().clubID}/profilePic.png`, (err, signedUrls) => {
+    config.generateLogoUrl(`${snapshot.val().clubID}/profilePic`, (err, signedUrls) => {
       if (err) {
         res.status(200).send(err)
       } else {
@@ -93,10 +93,10 @@ exports.generate_pdf = function (req, res) {
                 res.status(200).send(err)
               } else {
                 admin.database().ref('events').child(eventID + '/receiptURL').set(downloadURL)
-                // fs.unlink(filename, (err) => {
-                //   if (err) throw err
-                //   console.log(filename + ' was deleted from local server')
-                // })
+                fs.unlink(filename, (err) => {
+                  if (err) throw err
+                  console.log(filename + ' was deleted from local server')
+                })
                 res.status(200).send(downloadURL)
               }
             })
