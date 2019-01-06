@@ -110,69 +110,73 @@ exports.sendEventBookingStatusEmailTemplate = function (req, res) {
   // var bookerName = req.query.booker_name
   var bookerEmail = req.query.booker_email
   var eventName = req.query.event_name
-  var receiptUrl = req.query.receipt_url
-  var file
-  var imageStatus
-  var subject
-  if (mode === 'APPROVED') {
-    file = 'approved.ejs'
-    imageStatus = imgApproved
-    subject = 'Event Approved'
-  } else if (mode === 'REJECTED') {
-    file = 'rejected.ejs'
-    imageStatus = imgRejected
-    subject = 'Event Rejected'
-    switch (authority) {
-      case 'FA':
-        authority = 'Faculty Advisor'
-        break
-      case 'AD':
-        authority = 'Assistant Director'
-        break
-      case 'SO':
-        authority = 'Security Officer'
+  var eventID = req.query.event_id
+  var eventRef = admin.database().ref('events/' + eventID)
+  eventRef.once('value', function (snapshot) {
+    var receiptUrl = snapshot.val().receiptURL
+    var file
+    var imageStatus
+    var subject
+    if (mode === 'APPROVED') {
+      file = 'approved.ejs'
+      imageStatus = imgApproved
+      subject = 'Event Approved'
+    } else if (mode === 'REJECTED') {
+      file = 'rejected.ejs'
+      imageStatus = imgRejected
+      subject = 'Event Rejected'
+      switch (authority) {
+        case 'FA':
+          authority = 'Faculty Advisor'
+          break
+        case 'AD':
+          authority = 'Assistant Director'
+          break
+        case 'SO':
+          authority = 'Security Officer'
+      }
+    } else if (mode === 'FLAGGED') {
+      file = 'flagged.ejs'
+      imageStatus = imgFlagged
+      subject = 'Event Flagged'
+      switch (authority) {
+        case 'FA':
+          authority = 'Faculty Advisor'
+          break
+        case 'AD':
+          authority = 'Assistant Director'
+          break
+        case 'SO':
+          authority = 'Security Officer'
+      }
     }
-  } else if (mode === 'FLAGGED') {
-    file = 'flagged.ejs'
-    imageStatus = imgFlagged
-    subject = 'Event Flagged'
-    switch (authority) {
-      case 'FA':
-        authority = 'Faculty Advisor'
-        break
-      case 'AD':
-        authority = 'Assistant Director'
-        break
-      case 'SO':
-        authority = 'Security Officer'
-    }
-  }
-  ejs.renderFile(path.join(__dirname, '/../emailTemplates/', file), {
-    club_name: clubName,
-    event_name: eventName,
-    receipt_link: receiptUrl,
-    img_status: imageStatus,
-    authority: authority,
-    message: message
-  }, function (err, html) {
-    if (err) {
-      console.log(err)
-      return
-    }
-    console.log('else')
-
-    var mainOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: [clubEmail, bookerEmail],
-      subject: subject,
-      html: html
-    }
-    transporter.sendMail(mainOptions, function (err, info) {
+    ejs.renderFile(path.join(__dirname, '/../emailTemplates/', file), {
+      club_name: clubName,
+      event_name: eventName,
+      receipt_link: receiptUrl,
+      img_status: imageStatus,
+      authority: authority,
+      message: message
+    }, function (err, html) {
       if (err) {
         console.log(err)
-      } else {
-        console.log('Message sent: ' + info.response)
+        return
       }
+      console.log('else')
+
+      var mainOptions = {
+        from: process.env.SENDER_EMAIL,
+        to: [clubEmail, bookerEmail],
+        subject: subject,
+        html: html
+      }
+      transporter.sendMail(mainOptions, function (err, info) {
+        if (err) {
+          console.log(err)
+        } else {
+          console.log('Message sent: ' + info.response)
+        }
+      })
     })
   })
 }
