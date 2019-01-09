@@ -26,9 +26,17 @@ exports.generate_pdf = function (req, res) {
     // determines the academic block according to the first digit as array index
     var roomBlock = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
     rooms.forEach(function (room) {
-      var block = Math.floor(room / 1000) - 1
-      var roomNo = room % 1000
-      block = roomBlock[block]
+      let block
+      let roomNo
+
+      if (room === 53101 || 53102) {
+        block = roomBlock[4]
+        roomNo = room === 53101 ? '310A' : '310B'
+      } else {
+        block = Math.floor(room / 1000) - 1
+        roomNo = room % 1000
+        block = roomBlock[block]
+      }
       roomlist += block + '-' + roomNo + ', '
     })
     roomlist = roomlist.replace(/,\s*$/, '')
@@ -101,13 +109,13 @@ exports.generate_pdf = function (req, res) {
       })
     })
   },
-  function (error) {
-    console.log('Error: ' + error.code)
-  })
+    function (error) {
+      console.log('Error: ' + error.code)
+    })
 }
 
 exports.generate_daily_events = function (req, res) {
-  function snapshotToArray (snapshot) {
+  function snapshotToArray(snapshot) {
     var returnArr = []
 
     snapshot.forEach(function (childSnapshot) {
@@ -205,7 +213,7 @@ exports.generate_daily_events = function (req, res) {
 }
 
 exports.generate_sheet = function (req, res) {
-  function snapshotToArray (snapshot) {
+  function snapshotToArray(snapshot) {
     var returnArr = []
     snapshot.forEach(function (childSnapshot) {
       var item = childSnapshot.val()
