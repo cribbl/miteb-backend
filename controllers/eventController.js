@@ -29,7 +29,7 @@ exports.generate_pdf = function (req, res) {
       let block
       let roomNo
 
-      if (room === 53101 || 53102) {
+      if (room === 53101 || room === 53102) {
         block = roomBlock[4]
         roomNo = room === 53101 ? '310A' : '310B'
       } else {
