@@ -12,6 +12,27 @@ const SO_NAME = 'Ashok Rao'
 
 var config = require('../config/config.js')
 
+function getRoomList (rooms) {
+  let roomlist = ''
+  // determines the academic block according to the first digit as array index
+  var roomBlock = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
+  rooms.forEach(function (room) {
+    let block
+    let roomNo
+
+    if (room === 53101 || room === 53102) {
+      block = roomBlock[4]
+      roomNo = room === 53101 ? '310A' : '310B'
+    } else {
+      block = Math.floor(room / 1000) - 1
+      roomNo = room % 1000
+      block = roomBlock[block]
+    }
+    roomlist += block + '-' + roomNo + ', '
+  })
+  roomlist = roomlist.replace(/,\s*$/, '')
+  return roomlist
+}
 exports.generate_pdf = function (req, res) {
   var eventID = req.query.eventID
   var filename = `${eventID}.pdf`
@@ -21,25 +42,7 @@ exports.generate_pdf = function (req, res) {
   eventref.once('value', function (snapshot) {
     var html
     // Room selecting logic
-    var rooms = snapshot.val().rooms
-    var roomlist = ''
-    // determines the academic block according to the first digit as array index
-    var roomBlock = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
-    rooms.forEach(function (room) {
-      let block
-      let roomNo
-
-      if (room === 53101 || room === 53102) {
-        block = roomBlock[4]
-        roomNo = room === 53101 ? '310A' : '310B'
-      } else {
-        block = Math.floor(room / 1000) - 1
-        roomNo = room % 1000
-        block = roomBlock[block]
-      }
-      roomlist += block + '-' + roomNo + ', '
-    })
-    roomlist = roomlist.replace(/,\s*$/, '')
+    let roomList = getRoomList(snapshot.val().rooms)
     var notes
     var visibility = 'hidden'
     if (snapshot.val().notes) {
@@ -61,7 +64,7 @@ exports.generate_pdf = function (req, res) {
         endDate: moment(snapshot.val().endDate, 'DD-MM-YYYY').format('dddd, DD MMM YYYY'),
         start_time: snapshot.val().start_time,
         end_time: snapshot.val().end_time,
-        room_list: roomlist,
+        room_list: roomList,
         isVisible: visibility,
         Notes: notes,
         fa_name: snapshot.val().FA_name,
@@ -143,23 +146,15 @@ exports.generate_daily_events = function (req, res) {
       console.log('No events booked for this day')
       res.status(200).send('No Events Booked')
     } else {
-      var eventarr = []
-      var roomlist
+      let eventarr = []
+      let roomlist
       eventID.forEach(function (element) {
         eventRef.child('events/' + element).once('value', function (snapshot) {
           console.log(snapshot.val().clubName)
           console.log(element)
-          var rooms = snapshot.child('rooms/').val()
-          roomlist = ''
-          var roomBlock = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
-          rooms.forEach(function (room) {
-            var block = Math.floor(room / 1000) - 1
-            var roomNo = room % 1000
-            block = roomBlock[block]
-            roomlist += block + '-' + roomNo + ', '
-          })
-          roomlist = roomlist.replace(/,\s*$/, '')
-          var eventObj = []
+          let rooms = snapshot.child('rooms/').val()
+          roomlist = getRoomList(rooms)
+          let eventObj = []
           eventObj.push(element)
           eventObj.push(snapshot.val().clubName)
           eventObj.push(roomlist)
@@ -273,15 +268,7 @@ exports.generate_sheet = function (req, res) {
               edate = t4.format('dddd, Do MMMM YYYY')
               title = snapshot.child('title').val()
               var rooms = snapshot.child('rooms/').val()
-              roomlist = ''
-              var roomBlock = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
-              rooms.forEach(function (room) {
-                var block = Math.floor(room / 1000) - 1
-                var roomNo = room % 1000
-                block = roomBlock[block]
-                roomlist += block + '-' + roomNo + ', '
-              })
-              roomlist = roomlist.replace(/,\s*$/, '')
+              roomlist = getRoomList(rooms)
               bookerName = snapshot.child('booker_name').val()
               worksheet.addRow({
                 event_id: eventId,
@@ -342,15 +329,7 @@ exports.generate_sheet = function (req, res) {
             edate = t2.format('dddd, Do MMMM YYYY')
             title = snapshot.child('title').val()
             var rooms = snapshot.child('rooms/').val()
-            roomlist = ''
-            var roomBlock = ['AB-1', 'AB-2', 'NLH', 'IC', 'AB-5']
-            rooms.forEach(function (room) {
-              var block = Math.floor(room / 1000) - 1
-              var roomNo = room % 1000
-              block = roomBlock[block]
-              roomlist += block + '-' + roomNo + ', '
-            })
-            roomlist = roomlist.replace(/,\s*$/, '')
+            roomlist = getRoomList(rooms)
             bookerName = snapshot.child('booker_name').val()
             worksheet.addRow({
               event_id: eventId,
