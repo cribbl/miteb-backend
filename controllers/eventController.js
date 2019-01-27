@@ -309,10 +309,11 @@ exports.generate_sheet = function (req, res) {
             var t1 = moment(sdate, 'DD-MM-YYYY')
             var t2 = moment(edate, 'DD-MM-YYYY')
             var mon = t1.month()
+            let worksheet
             if (workbook.getWorksheet(months[mon])) {
-              // worksheet = workbook.getWorksheet(months[mon])
+              worksheet = workbook.getWorksheet(months[mon])
             } else {
-              var worksheet = workbook.addWorksheet(months[mon])
+              worksheet = workbook.addWorksheet(months[mon])
             }
             worksheet.columns = [
               { header: 'Event ID', key: 'event_id', width: 25 },
