@@ -129,83 +129,89 @@ exports.generate_pdf = function (req, res) {
   })
 }
 
-exports.generate_daily_events = function (req, res) {
+exports.generate_daily_events = async function (req, res) {
   var date = req.query.date
   var filename = path.join(__dirname, `events-${date}.pdf`)
   console.log(date)
   var eventsRef = admin.database().ref('to-be-held/' + date)
-  var eventRef = admin.database().ref()
   eventsRef.once('value', function (snapshot) {
-    var html
-    var eventID = snapshotToArray(snapshot)
-    var eventCount = eventID.length
-    var i = 0
-    if (eventCount === 0) {
-      console.log('No events booked for this day')
-      res.status(200).send('No Events Booked')
+    if (snapshot.val() === null) {
+      console.log('no events are booked')
+      res.status(200).send('No events are booked at this day')
     } else {
+      var html
+      var eventID = snapshotToArray(snapshot)
+      var firebaseDB = admin.database().ref()
       let eventarr = []
       let roomlist
+      const promises = []
       eventID.forEach(function (element) {
-        eventRef.child('events/' + element).once('value', function (snapshot) {
-          if (snapshot.val().SO_appr === 'approved') {
-            let rooms = snapshot.child('rooms/').val()
-            roomlist = getRoomList(rooms)
-            let eventObj = []
-            eventObj.push(element)
-            eventObj.push(snapshot.val().clubName)
-            eventObj.push(roomlist)
-            eventarr.push(eventObj)
-          }
-          i++
-          if (i === eventCount) {
-            console.log(eventarr)
-            if (eventarr.length === 0) {
-              console.log('No approved events for this day')
-              res.status(200).send('No approved events')
-            } else {
-              ejs.renderFile(path.join(__dirname, '/dailyeventpdf.ejs'), {
-                events: eventarr,
-                date: date
-              }, function (err, result) {
-                if (result) {
-                  html = result
-                } else {
-                  res.end('An error occurred')
-                  console.log(err)
-                }
-              })
-              var options = {
-                filename: filename,
-                height: '870px',
-                width: '650px',
-                orientation: 'portrait',
-                type: 'pdf',
-                timeout: '30000',
-                border: '10'
-              }
-
-              pdf.create(html, options).toFile(function (err, result) {
-                if (err) {
-                  console.log(err)
-                } else {
-                  res.download(path.join(filename), function (err, result) {
-                    if (err) {
-                      console.log('Error downloading file: ' + err)
-                    } else {
-                      console.log('File downloaded successfully')
-                      fs.unlink(filename, (err) => {
-                        if (err) throw err
-                        console.log(filename + ' was deleted from local server')
-                      })
-                    }
-                  })
-                }
-              })
+        const p = firebaseDB.child('events/' + element).once('value', function (snapshot) {
+          if (snapshot.val() === null) {
+            console.log('Event does not exist')
+          } else {
+            if (snapshot.val().SO_appr === 'approved') {
+              let rooms = snapshot.child('rooms/').val()
+              roomlist = getRoomList(rooms)
+              let eventObj = []
+              eventObj.push(element)
+              eventObj.push(snapshot.val().clubName)
+              eventObj.push(roomlist)
+              eventarr.push(eventObj)
             }
           }
         })
+        promises.push(p)
       })
+      Promise.all(promises)
+        .then(() => {
+          if (eventarr.length === 0) {
+            console.log('No approved events for this day')
+            res.status(200).send('No approved events')
+          } else {
+            ejs.renderFile(path.join(__dirname, '/dailyeventpdf.ejs'), {
+              events: eventarr,
+              date: date
+            }, function (err, result) {
+              if (result) {
+                html = result
+              } else {
+                res.end('An error occurred')
+                console.log(err)
+              }
+            })
+            var options = {
+              filename: filename,
+              height: '870px',
+              width: '650px',
+              orientation: 'portrait',
+              type: 'pdf',
+              timeout: '30000',
+              border: '10'
+            }
+            pdf.create(html, options).toFile(function (err, result) {
+              if (err) {
+                console.log(err)
+              } else {
+                res.download(path.join(filename), function (err, result) {
+                  if (err) {
+                    console.log('Error downloading file: ' + err)
+                  } else {
+                    console.log('File downloaded successfully')
+                    fs.unlink(filename, (err) => {
+                      if (err) throw err
+                      console.log(filename + ' was deleted from local server')
+                    })
+                  }
+                })
+              }
+            })
+          }
+        })
+        .catch(error => {
+          console.log(error)
+          res.status(500).send('there was some error')
+        })
     }
   })
 }
