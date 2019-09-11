@@ -133,75 +133,68 @@ exports.generate_daily_events = function (req, res) {
   console.log(date)
   var eventsRef = admin.database().ref('to-be-held/' + date)
   var eventRef = admin.database().ref()
-  // console.log(eventsRef);
-  eventsRef.once('value', function (snapshot) {
-    // if(snapshot.val()===null) {
-    //   console.log("No events Booked for this day")
-    // }
+  eventsRef.once('value', async function (snapshot) {
     var html
-    var eventID = snapshotToArray(snapshot)
-    var eventCount = eventID.length
-    var i = 0
+    var eventIDs = snapshotToArray(snapshot)
+    var eventCount = eventIDs.length
     if (eventCount === 0) {
       console.log('No events booked for this day')
       res.status(200).send('No Events Booked')
     } else {
-      let eventarr = []
       let roomlist
-      eventID.forEach(function (element) {
-        eventRef.child('events/' + element).once('value', function (snapshot) {
-          console.log(snapshot.val().clubName)
-          console.log(element)
-          let rooms = snapshot.child('rooms/').val()
-          roomlist = getRoomList(rooms)
-          let eventObj = []
-          eventObj.push(element)
-          eventObj.push(snapshot.val().clubName)
-          eventObj.push(roomlist)
-          eventarr.push(eventObj)
-          i++
-          if (i === eventCount) {
-            console.log(eventarr)
-            ejs.renderFile(path.join(__dirname, '/dailyeventpdf.ejs'), {
-              events: eventarr,
-              date: date
-            }, function (err, result) {
-              if (result) {
-                html = result
-              } else {
-                res.end('An error occurred')
-                console.log(err)
-              }
-            })
-            var options = {
-              filename: filename,
-              height: '870px',
-              width: '650px',
-              orientation: 'portrait',
-              type: 'pdf',
-              timeout: '30000',
-              border: '10'
-            }
+      // TODO: A lot of db calls being made here.Fix this.
+      let snapshots = await Promise.all(eventIDs.map((id) => {
+        return eventRef.child('events/' + id).once('value')
+      }))
 
-            pdf.create(html, options).toFile(function (err, result) {
-              if (err) {
-                console.log(err)
-              } else {
-                res.download(path.join(filename), function (err, result) {
-                  if (err) {
-                    console.log('Error downloading file: ' + err)
-                  } else {
-                    console.log('File downloaded successfully')
-                    fs.unlink(filename, (err) => {
-                      if (err) throw err
-                      console.log(filename + ' was deleted from local server')
-                    })
-                  }
-                })
-              }
-            })
-          }
-        })
+      let eventArr = snapshots.map((snapshot) => {
+        let rooms = snapshot.child('rooms/').val()
+        roomlist = getRoomList(rooms)
+        let eventObj = []
+        eventObj.push(snapshot.key)
+        eventObj.push(snapshot.val().clubName)
+        eventObj.push(roomlist)
+        return eventObj
+      })
+      console.log(eventArr)
+
+      ejs.renderFile(path.join(__dirname, '/dailyeventpdf.ejs'), {
+        events: eventArr,
+        date: date
+      }, function (err, result) {
+        if (result) {
+          html = result
+        } else {
+          res.end('An error occurred')
+          console.log(err)
+        }
+      })
+      var options = {
+        filename: filename,
+        height: '870px',
+        width: '650px',
+        orientation: 'portrait',
+        type: 'pdf',
+        timeout: '30000',
+        border: '10'
+      }
+
+      pdf.create(html, options).toFile(function (err, result) {
+        if (err) {
+          console.log(err)
+        } else {
+          res.download(path.join(filename), function (err, result) {
+            if (err) {
+              console.log('Error downloading file: ' + err)
+            } else {
+              console.log('File downloaded successfully')
+              fs.unlink(filename, (err) => {
+                if (err) throw err
+                console.log(filename + ' was deleted from local server')
+              })
+            }
+          })
+        }
       })
     }
   })
