@@ -10,7 +10,7 @@ const path = require('path')
 const AD_NAME = 'Narayana Shenoy'
 const SO_NAME = 'Ashok Rao'
 
-var config = require('../config/config.js')
+var config = require('../config/util.js')
 
 function getRoomList (rooms) {
   let roomlist = ''
