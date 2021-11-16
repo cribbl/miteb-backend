@@ -12,7 +12,7 @@
     "test": "standard"
   },
   "dependencies": {
-    "aws-sdk": "^2.249.1",
+    "aws-sdk": "^2.814.0",
     "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
