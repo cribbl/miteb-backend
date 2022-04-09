@@ -24,7 +24,7 @@
     "firebase-admin": "^6.4.0",
     "fs": "0.0.1-security",
     "html-pdf": "^2.2.0",
-    "moment": "^2.21.0",
+    "moment": "^2.29.2",
     "nodemailer": "^4.6.4",
     "nodemailer-smtp-transport": "^2.7.4",
     "npm": "^6.4.1",
