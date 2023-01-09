@@ -21,7 +21,7 @@
     "env-cmd": "^8.0.2",
     "exceljs": "^1.5.1",
     "express": "^4.16.2",
-    "firebase-admin": "^6.4.0",
+    "firebase-admin": "^11.4.1",
     "fs": "0.0.1-security",
     "html-pdf": "^2.2.0",
     "moment": "^2.21.0",
