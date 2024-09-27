@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const path = require('path')
-require('./config/config.js')
+require('./config/util.js')
 const app = express()
 var allowCrossDomain = function (req, res, next) {
   var devAllowedOrigins = ['http://localhost:3000', 'https://miteb-stage.cribblservices.com']
